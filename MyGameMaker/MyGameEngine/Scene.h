@@ -46,8 +46,7 @@ public:
 	void CreateCone();
 	void CreateTorus();
 
-private:
-	std::shared_ptr<GameObject> selectedGameObject;
+
 };
 
 #endif // !__SCENE_H__

@@ -47,6 +47,9 @@ bool PanelInspector::Draw()
                 if (componentName == "Transform" && selectedGameObject->GetComponent<Transform>() != nullptr)    isDisabled = true;
                 else if (componentName == "Mesh" && selectedGameObject->GetComponent<Mesh>() != nullptr)         isDisabled = true;
                 else if (componentName == "Material" && selectedGameObject->GetComponent<Material>() != nullptr) isDisabled = true;
+                else if (componentName == "Camera" && selectedGameObject->GetComponent<Camera>() == nullptr) {
+                    selectedGameObject->AddComponent<Camera>();
+                }
 
                 if (isDisabled) {
                     ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.5f, 0.5f, 0.5f, 1.0f)); // Dimmed text color

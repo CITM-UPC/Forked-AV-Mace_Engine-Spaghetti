@@ -33,7 +33,7 @@ private:
 	std::vector<std::string> layers = { "Default", "TransparentFX", "Ignore Raycast", "Water", "UI", "PostProcessing" };
 
 	// Component options
-	std::vector<std::string> componentOptions = { "Transform", "Mesh", "Material"};
+	std::vector<std::string> componentOptions = { "Transform", "Mesh", "Material", "Camera" };
 
 	bool showPerTriangleNormals = false;
 	bool showPerFaceNormals = false;

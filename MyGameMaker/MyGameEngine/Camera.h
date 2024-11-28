@@ -7,6 +7,8 @@
 class Camera : public Component
 {
 public:
+	bool isActiveCamera = false;
+
 	double fov = glm::radians(60.0);
 	double aspect = 16.0 / 9.0;
 	double zNear = 0.1;

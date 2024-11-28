@@ -70,6 +70,10 @@ void Scene::Update(double& dT)
 		LOG(LogType::LOG_WARNING, "No camera found in the scene.");
 		return;
 	}
+	if (cameraObject) {
+		auto camera = cameraObject->GetComponent<Camera>();
+		camera->isActiveCamera = true;
+	}
 
 	auto camera = cameraObject->GetComponent<Camera>();
 	auto& cameratransform = camera->transform();
@@ -227,14 +231,7 @@ void Scene::Update(double& dT)
 		}
 	}
 
-	// Create a GameObject with a Camera component
-	void Scene::CreateCameraObject()
-	{
-		auto cameraObject = std::make_shared<GameObject>("MainCamera");
-		cameraObject->AddComponent<Camera>();
-		cameraObject->GetComponent<Transform>()->pos() = vec3(0, 3, 8);
-		root()->addChild(cameraObject);
-	}
+
 }
 
 void Scene::PostUpdate()
@@ -251,6 +248,9 @@ void Scene::CleanUp()
 }
 
 void Scene::OnSceneChange() {}
+
+
+
 
 void Scene::Draw(GameObject* root)
 {
@@ -309,6 +309,15 @@ std::shared_ptr<GameObject> Scene::CreateGameObject()
 	else selectedGameObject->addChild(go);
 
 	return go;
+}
+
+// Create a GameObject with a Camera component
+void Scene::CreateCameraObject()
+{
+	auto cameraObject = std::make_shared<GameObject>("MainCamera");
+	cameraObject->AddComponent<Camera>();
+	cameraObject->GetComponent<Transform>()->pos() = vec3(0, 3, 8);
+	root()->addChild(cameraObject);
 }
 
 void Scene::CreateCube()
