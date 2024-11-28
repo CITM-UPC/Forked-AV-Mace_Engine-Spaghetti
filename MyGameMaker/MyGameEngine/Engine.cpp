@@ -15,8 +15,8 @@ void Engine::Awake()
     LOG(LogType::LOG_INFO, "Welcome to AV_Mace Engine!");
     window = new MyWindow();
     input = new Input();
-	renderer = new Renderer();
-	scene = new Scene("Scene");
+    renderer = new Renderer();
+    scene = new Scene("Scene");
 
     LOG(LogType::LOG_CHANGE_ENV, "------------- Application Init -------------");
     window->Awake();
@@ -35,10 +35,10 @@ void Engine::Awake()
 
 void Engine::Start()
 {
-	window->Start();
+    window->Start();
     input->Start();
-	renderer->Start();
-	scene->Start();
+    renderer->Start();
+    scene->Start();
 }
 
 bool Engine::PreUpdate()
@@ -50,26 +50,26 @@ bool Engine::PreUpdate()
 void Engine::Update(double& dt)
 {
     this->dt = dt;
-	scene->Update(dt);
+    scene->Update(dt);
 }
 
 void Engine::PostUpdate()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+    glViewport(0, 0, window->width(), window->height());
+    scene->camera()->GetComponent<Camera>()->aspect() = static_cast<double>(window->width()) / window->height();
+
     //draw floor grid
     glMatrixMode(GL_MODELVIEW);
-    glLoadMatrixd(&scene->_camera.view()[0][0]);
+    glLoadMatrixd(&scene->camera()->GetComponent<Camera>()->view()[0][0]);
 
+    glMatrixMode(GL_PROJECTION);
+    glLoadMatrixd(&scene->camera()->GetComponent<Camera>()->projection()[0][0]);
 
     //draw things
     drawFloorGrid(16, 0.25);
     scene->Draw(scene->root());
-
-    glViewport(0, 0, window->width(), window->height());
-    scene->_camera.aspect = static_cast<double>(window->width()) / window->height();
-    glMatrixMode(GL_PROJECTION);
-    glLoadMatrixd(&scene->_camera.projection()[0][0]);
 }
 
 void Engine::CleanUp()
