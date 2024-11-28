@@ -36,9 +36,7 @@ bool isZooming = false;
 void Scene::Start()
 {
 	// Init camera
-	_camera.transform().pos() = vec3(0, 3, 8);
-	_camera.transform().rotate(glm::radians(180.0), vec3(0, 1, 0));
-	_camera.transform().rotate(glm::radians(20.0), vec3(1, 0, 0));
+	void InitCamera();
 
     std::shared_ptr<GameObject> bakerHouse = CreateGameObject();
 

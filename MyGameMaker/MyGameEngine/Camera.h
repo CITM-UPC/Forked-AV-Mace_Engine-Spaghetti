@@ -15,9 +15,13 @@ public:
 	double zFar = 128.0;
 	float speed = 10.0f;
 
-	Camera(GameObject* owner, bool active = true)
-		: Component(active, owner) {
+	Camera()
+		: Component(true, nullptr) // Assign a default owner or handle nullptr appropriately
+	{
 	}
+
+	Camera(bool active, GameObject* owner) : Component(active, owner) {}
+	~Camera() {}
 
 
 	glm::dmat4 projection() const;
