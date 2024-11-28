@@ -88,7 +88,7 @@ void Mesh::loadToOpenGL()
 	GLCall(glBindBuffer(GL_ARRAY_BUFFER, 0));
 	GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0));
 	GLCall(glBindVertexArray(0));
-	
+
 }
 
 void Mesh::drawModel() const
@@ -107,7 +107,7 @@ void Mesh::drawModel() const
 		getOwner()->GetComponent<Material>()->m_Shader->SetUniformBool("u_HasTexture", false);
 	}
 
-	getOwner()->GetComponent<Material>()->m_Shader->SetUniformMat4f("u_MVP", (glm::mat4)Engine::Instance().scene->_camera.projection() * (glm::mat4)Engine::Instance().scene->_camera.view() * (glm::mat4)getOwner()->GetComponent<Transform>()->glob_mat());
+	getOwner()->GetComponent<Material>()->m_Shader->SetUniformMat4f("u_MVP", (glm::mat4)Engine::Instance().scene->camera()->GetComponent<Camera>()->projection() * (glm::mat4)Engine::Instance().scene->camera()->GetComponent<Camera>()->view() * (glm::mat4)getOwner()->GetComponent<Transform>()->glob_mat());
 
 	glDrawElements(GL_TRIANGLES, model.get()->GetModelData().indexData.size(), GL_UNSIGNED_INT, nullptr);
 
@@ -133,18 +133,18 @@ void Mesh::drawModel() const
 		}
 	}
 	//------------------------------------------------------
-	
+
 }
 
 void Mesh::loadNormalsToOpenGL()
 {
-	float normal_length = 0.1f;  // Ajusta la longitud según sea necesario
+	float normal_length = 0.1f;
 
 	for (unsigned int i = 0; i < model.get()->GetModelData().vertexData.size(); i++) {
 		glm::vec3 vertex = model.get()->GetModelData().vertexData[i];
 		glm::vec3 normal = model.get()->GetModelData().vertex_normals[i];
 
-		// Agregar el punto inicial (vértice) y el punto final (normal)
+		// Agregar el punto inicial (vertice) y el punto final (normal)
 		normalLines.push_back(vertex);
 		normalLines.push_back(vertex + normal * normal_length);
 	}
@@ -153,7 +153,7 @@ void Mesh::loadNormalsToOpenGL()
 	glGenBuffers(1, &vBNormalsLinesID);
 	glBindBuffer(GL_ARRAY_BUFFER, vBNormalsLinesID);
 	glBufferData(GL_ARRAY_BUFFER, normalLines.size() * sizeof(glm::vec3), normalLines.data(), GL_STATIC_DRAW);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);  // Desvincular el buffer después de cargar los datos
+	glBindBuffer(GL_ARRAY_BUFFER, 0);  // Unlink the buffer after loading data
 
 	m_NormalLinesShader = std::make_unique<Shader>("Assets/Shaders/NormalLines.shader");
 }
@@ -194,18 +194,18 @@ void Mesh::draw() const {
 void Mesh::drawNormals() const
 {
 	m_NormalLinesShader->Bind();
-	m_NormalLinesShader->SetUniformMat4f("u_MVP", (glm::mat4)Engine::Instance().scene->_camera.projection() * (glm::mat4)Engine::Instance().scene->_camera.view() * (glm::mat4)getOwner()->GetComponent<Transform>()->glob_mat());
+	m_NormalLinesShader->SetUniformMat4f("u_MVP", (glm::mat4)Engine::Instance().scene->camera()->GetComponent<Camera>()->projection() * (glm::mat4)Engine::Instance().scene->camera()->GetComponent<Camera>()->view() * (glm::mat4)getOwner()->GetComponent<Transform>()->glob_mat());
 	m_NormalLinesShader->SetUniform4f("u_Color", 1.0f, 0.0f, 0.0f, 1.0f);
 
-	// Enlaza el VBO de las líneas de normales
+	// Enlaza el VBO de las lineas de normales
 	glBindBuffer(GL_ARRAY_BUFFER, vBNormalsLinesID);
-	glEnableVertexAttribArray(0); // Usa la ubicación 0 para las posiciones
+	glEnableVertexAttribArray(0); // Usa la ubicaci?n 0 para las posiciones
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), (const void*)0);
 
-	// Dibuja las líneas de normales
+	// Dibuja las lineas de normales
 	glDrawArrays(GL_LINES, 0, normalLines.size());
 
-	// Limpieza después de dibujar las líneas
+	// Limpieza despu?s de dibujar las l?neas
 	glDisableVertexAttribArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	m_NormalLinesShader->UnBind();
@@ -213,21 +213,21 @@ void Mesh::drawNormals() const
 
 void Mesh::loadFaceNormalsToOpenGL()
 {
-	float normal_length = 0.1f;  // Ajusta la longitud según prefieras
+	float normal_length = 0.1f;  // Ajusta la longitud seg?n prefieras
 
-	// Recorrer todas las caras (triángulos) de la malla
+	// Recorrer todas las caras (tri?ngulos) de la malla
 	for (unsigned int i = 0; i < model.get()->GetModelData().indexData.size(); i += 3) {
-		// Obtener los índices de los tres vértices del triángulo
+		// Obtener los ?ndices de los tres v?rtices del tri?ngulo
 		unsigned int idx0 = model.get()->GetModelData().indexData[i];
 		unsigned int idx1 = model.get()->GetModelData().indexData[i + 1];
 		unsigned int idx2 = model.get()->GetModelData().indexData[i + 2];
 
-		// Obtener las posiciones de los vértices
+		// Obtener las posiciones de los v?rtices
 		glm::vec3 v0 = model.get()->GetModelData().vertexData[idx0];
 		glm::vec3 v1 = model.get()->GetModelData().vertexData[idx1];
 		glm::vec3 v2 = model.get()->GetModelData().vertexData[idx2];
 
-		// Calcular el centro del triángulo
+		// Calcular el centro del tri?ngulo
 		glm::vec3 center = (v0 + v1 + v2) / 3.0f;
 
 		// Calcular la normal de la cara usando el producto cruzado
@@ -238,27 +238,27 @@ void Mesh::loadFaceNormalsToOpenGL()
 		faceNormalLines.push_back(center + normal * normal_length);
 	}
 
-	// Crear el VBO para las líneas de las normales por cara
+	// Crear el VBO para las l?neas de las normales por cara
 	glGenBuffers(1, &vBfaceNormalLinesID);
 	glBindBuffer(GL_ARRAY_BUFFER, vBfaceNormalLinesID);
 	glBufferData(GL_ARRAY_BUFFER, faceNormalLines.size() * sizeof(glm::vec3), faceNormalLines.data(), GL_STATIC_DRAW);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);  // Desvincular el buffer después de cargar los datos
+	glBindBuffer(GL_ARRAY_BUFFER, 0);  // Desvincular el buffer despu?s de cargar los datos
 }
 
 void Mesh::drawFaceNormals() const {
 	m_NormalLinesShader->Bind();
-	m_NormalLinesShader->SetUniformMat4f("u_MVP", (glm::mat4)Engine::Instance().scene->_camera.projection() * (glm::mat4)Engine::Instance().scene->_camera.view() * (glm::mat4)getOwner()->GetComponent<Transform>()->glob_mat());
+	m_NormalLinesShader->SetUniformMat4f("u_MVP", (glm::mat4)Engine::Instance().scene->camera()->GetComponent<Camera>()->projection() * (glm::mat4)Engine::Instance().scene->camera()->GetComponent<Camera>()->view() * (glm::mat4)getOwner()->GetComponent<Transform>()->glob_mat());
 	m_NormalLinesShader->SetUniform4f("u_Color", 0.0f, 0.0f, 1.0f, 1.0f);
 
-	// Enlaza el VBO de las líneas de normales por cara
+	// Enlaza el VBO de las lineas de normales por cara
 	glBindBuffer(GL_ARRAY_BUFFER, vBfaceNormalLinesID);
-	glEnableVertexAttribArray(0); // Usa la ubicación 0 para las posiciones
+	glEnableVertexAttribArray(0); // Usa la ubicaci?n 0 para las posiciones
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), (const void*)0);
 
-	// Dibuja las líneas de normales por cara
+	// Dibuja las lineas de normales por cara
 	glDrawArrays(GL_LINES, 0, faceNormalLines.size());
 
-	// Limpieza después de dibujar las líneas
+	// Limpieza despues de dibujar las l?neas
 	glDisableVertexAttribArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	m_NormalLinesShader->UnBind();
