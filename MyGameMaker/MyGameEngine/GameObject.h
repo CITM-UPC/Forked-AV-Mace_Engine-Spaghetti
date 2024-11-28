@@ -28,6 +28,20 @@ public:
 	virtual bool SwitchState() { return _active = !_active; }
 
 	template <typename T>
+	std::shared_ptr<GameObject> FindChildWithComponent() const {
+		for (const auto& child : children()) {
+			if (child->GetComponent<T>()) {
+				return child;
+			}
+			auto found = child->FindChildWithComponent<T>();
+			if (found) {
+				return found;
+			}
+		}
+		return nullptr;
+	}
+
+	template <typename T>
 	T* AddComponent() {
 		static_assert(std::is_base_of<Component, T>::value, "ERROR: T must inherit from Component");
 		T* newComponent = new T(true, this);

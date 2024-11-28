@@ -29,18 +29,25 @@ public:
 	void OnSceneChange();
 	void Draw(GameObject* root);
 
+
+
+
 	void loadGameObjectByPath(const std::string& path);
 	void loadTextureByPath(const std::string& path);
 
 	GameObject* selectedGameObject = nullptr;
 
 	std::shared_ptr<GameObject> CreateGameObject();
+	void CreateCameraObject();
 	void CreateCube();
 	void CreatePlane();
 	void CreateSphere();
 	void CreateCylinder();
 	void CreateCone();
 	void CreateTorus();
+
+private:
+	std::shared_ptr<GameObject> selectedGameObject;
 };
 
 #endif // !__SCENE_H__

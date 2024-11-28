@@ -64,6 +64,16 @@ void Scene::Start()
 
 void Scene::Update(double& dT)
 {
+	// Get the main camera
+	auto cameraObject = root()->FindChildWithComponent<Camera>();
+	if (!cameraObject) {
+		LOG(LogType::LOG_WARNING, "No camera found in the scene.");
+		return;
+	}
+
+	auto camera = cameraObject->GetComponent<Camera>();
+	auto& cameratransform = camera->transform();
+
 	//camera speed
 	if (Engine::Instance().input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_REPEAT) {
 		_camera.speed = 20.0f;
@@ -152,8 +162,8 @@ void Scene::Update(double& dT)
 	//camera focus
 	if (Engine::Instance().input->GetKey(SDL_SCANCODE_F) == KEY_DOWN) {
 		if (selectedGameObject != nullptr) {
-			_camera.transform().pos() = selectedGameObject->GetComponent<Transform>()->pos() + vec3(0, 3, 8);
-			_camera.transform().setFwd(glm::normalize(selectedGameObject->GetComponent<Transform>()->pos() - _camera.transform().pos()));
+			cameratransform.pos() = selectedGameObject->GetComponent<Transform>()->pos() + vec3(0, 3, 8);
+			_camera.transform().setFwd(glm::normalize(selectedGameObject->GetComponent<Transform>()->pos() - cameratransform.pos()));
 			_camera.transform().setRigth(glm::normalize(glm::cross(vec3(0, 1, 0), _camera.transform().fwd())));
 			_camera.transform().setUp(glm::normalize(glm::cross(_camera.transform().fwd(), _camera.transform().right())));
 		}
@@ -178,7 +188,7 @@ void Scene::Update(double& dT)
 			vec3 targetPos = selectedGameObject->GetComponent<Transform>()->pos();
 
 			// Calcular la distancia y offset inicial entre la cámara y el objeto
-			vec3 offset = _camera.transform().pos() - targetPos;
+			vec3 offset = cameratransform.pos() - targetPos;
 			float orbitDistance = glm::length(offset);
 
 			// Calcular ángulos iniciales de la cámara
@@ -203,10 +213,10 @@ void Scene::Update(double& dT)
 			offset.y = orbitDistance * sin(verticalAngle);
 			offset.z = orbitDistance * cos(verticalAngle) * cos(horizontalAngle);
 
-			_camera.transform().pos() = targetPos + offset;
+			cameratransform.pos() = targetPos + offset;
 
 			// Actualizar la dirección de la cámara para que mire al objeto
-			_camera.transform().setFwd(glm::normalize(targetPos - _camera.transform().pos()));
+			_camera.transform().setFwd(glm::normalize(targetPos - cameratransform.pos()));
 			_camera.transform().setRigth(glm::normalize(glm::cross(vec3(0, 1, 0), _camera.transform().fwd())));
 			_camera.transform().setUp(glm::normalize(glm::cross(_camera.transform().fwd(), _camera.transform().right())));
 
@@ -215,6 +225,15 @@ void Scene::Update(double& dT)
 		else {
 			LOG(LogType::LOG_WARNING, "Select an Object!");
 		}
+	}
+
+	// Create a GameObject with a Camera component
+	void Scene::CreateCameraObject()
+	{
+		auto cameraObject = std::make_shared<GameObject>("MainCamera");
+		cameraObject->AddComponent<Camera>();
+		cameraObject->GetComponent<Transform>()->pos() = vec3(0, 3, 8);
+		root()->addChild(cameraObject);
 	}
 }
 

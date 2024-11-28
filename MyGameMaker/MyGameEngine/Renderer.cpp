@@ -1,8 +1,10 @@
 #include "Renderer.h"
-
+#include "Scene.h"
 #include <iostream>
 #include <string>
 #include "Engine.h"
+#include "Camera.h"
+#include "GameObject.h"
 #include <imgui.h>
 
 using namespace std;
@@ -44,6 +46,11 @@ void Renderer::Start() const
     LOG(LogType::LOG_APPINFO, "OpenGL version supported: %s", (char*)glGetString(GL_VERSION));
     LOG(LogType::LOG_APPINFO, "GLSL version: %s", (char*)glGetString(GL_SHADING_LANGUAGE_VERSION));
 	LOG(LogType::LOG_APPINFO, "ImGui version: %s", ImGui::GetVersion());
+    
+    auto cameraObject = std::make_shared<GameObject>("CameraObject"); // Define cameraObject
+    auto camera = cameraObject->GetComponent<Camera>();
+    glm::dmat4 viewMatrix = camera->view();
+    glm::dmat4 projectionMatrix = camera->projection();
 }
 
 //void Renderer::Draw(const VertexArray& va, const IndexBuffer& ib, const Shader& shader) const {

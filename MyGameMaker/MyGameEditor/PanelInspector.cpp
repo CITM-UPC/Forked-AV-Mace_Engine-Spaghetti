@@ -7,7 +7,7 @@
 #include "MyGameEngine/Transform.h"
 #include "MyGameEngine/Mesh.h"
 #include "MyGameEngine/Material.h"
-
+#include "MyGameEngine/Camera.h"
 #include "MyGameEngine/Log.h"
 
 PanelInspector::PanelInspector(std::string name) : Panel(name, WINDOW_WIDTH * 0.25, WINDOW_HEIGHT - 200)
@@ -30,6 +30,7 @@ bool PanelInspector::Draw()
         if (selectedGameObject->GetComponent<Transform>()) DrawTransformControls(selectedGameObject);
         if (selectedGameObject->GetComponent<Mesh>()) DrawMeshControls(selectedGameObject);
         if (selectedGameObject->GetComponent<Material>()) DrawMaterialControls(selectedGameObject);
+
 		ImGui::Text(" ");
 
 		// Add Component
