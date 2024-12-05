@@ -59,6 +59,16 @@ public:
 		return nullptr;
 	}
 
+	template <typename T>
+	bool HasComponent() const {
+		for (Component* component : _components) {
+			if (dynamic_cast<T*>(component)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	bool operator==(const GameObject& other) const;
 
 protected:
