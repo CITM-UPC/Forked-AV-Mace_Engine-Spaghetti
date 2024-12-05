@@ -19,6 +19,7 @@ PanelHierarchy::~PanelHierarchy() {}
 bool PanelHierarchy::Draw()
 {
    ImGui::SetNextWindowSize(ImVec2(width, Engine::Instance().window->height() - 219));
+
    ImGui::SetNextWindowPos(ImVec2(0, 19));
 
    ImGui::Begin("Hierarchy", &showWindow, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize);
@@ -29,6 +30,39 @@ bool PanelHierarchy::Draw()
    
    for (const std::shared_ptr<GameObject>& gameObjectPtr : Engine::Instance().scene->root()->children()) {
 	   DrawGameObjectTree(gameObjectPtr.get());
+   }
+   if (ImGui::IsMouseClicked(3) && ImGui::IsWindowHovered()) {
+       ImGui::OpenPopup("CreateGameObjectPopup");
+       LOG(LogType::LOG_INFO, "Open Popup");
+   }
+
+
+   // Create GameObjects Popup
+   if (ImGui::BeginPopup("CreateGameObjectPopup"))
+   {
+       LOG(LogType::LOG_INFO, "Popup Called");
+       ImGui::Selectable("Cut", false);
+       ImGui::Selectable("Copy", false);
+       ImGui::Selectable("Paste", false);
+       ImGui::Selectable("Paste As Child", false);
+       ImGui::Separator();
+       ImGui::Selectable("Rename", "F2", false);
+       ImGui::Selectable("Duplicate", "Ctrl+D", false);
+       ImGui::Selectable("Delete", "Del", false);
+       ImGui::Separator();
+       ImGui::Selectable("Select Children", false);
+       ImGui::Separator();
+       ImGui::Selectable("Create Empty", false);
+       if (ImGui::BeginMenu("Primitives")) {
+           // Add items here
+           ImGui::EndMenu();
+       }
+       if (ImGui::BeginMenu("Material")) {
+           // Add items here
+           ImGui::EndMenu();
+       }
+
+       ImGui::EndPopup();
    }
    ImGui::End();
 
