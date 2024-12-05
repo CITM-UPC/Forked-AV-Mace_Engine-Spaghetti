@@ -23,8 +23,8 @@ private:
 	int drawMode = 0;
 	DrawMode currentDrawMode = Mesh;
 
-	bool show_vertexNormals = true;
-	bool show_faceNormals = true;
+	bool showPerTriangleNormals = true;
+	bool showPerFaceNormals = true;
 };
 
 

@@ -140,9 +140,10 @@ void PanelInspector::DrawTransformControls(GameObject* gameObject)
     {
         auto* transform = gameObject->GetComponent<Transform>();
 
+        showComponent = transform->isActive();
         if (ImGui::Checkbox("Active", &transform->isActive())) {
             LOG(LogType::LOG_WARNING, "Transform Active checkbox was clicked!");
-            transform->SwitchState();
+            transform->SetActive(showComponent);
         }
 
         ImGui::SameLine();
@@ -211,6 +212,11 @@ void PanelInspector::DrawMeshControls(GameObject* gameObject)
     {
         auto* mesh = gameObject->GetComponent<Mesh>();
 
+        showComponent = mesh->isActive();
+
+        ImGui::Checkbox("Active", &showComponent);
+        mesh->SetActive(showComponent);
+
         ImGui::Checkbox("Active", &mesh->isActive());
         ImGui::SameLine();
         ImGui::Text("  File:");
@@ -238,6 +244,10 @@ void PanelInspector::DrawMaterialControls(GameObject* gameObject)
     if (ImGui::CollapsingHeader("Material", ImGuiTreeNodeFlags_DefaultOpen))
     {
         auto* material = gameObject->GetComponent<Material>();
+
+        showComponent = material->isActive();
+        ImGui::Checkbox("Active", &showComponent);
+        material->SetActive(showComponent);
 
         ImGui::Checkbox("Active", &material->isActive());
         ImGui::Text(" ");
@@ -269,6 +279,10 @@ void PanelInspector::DrawCameraControls(GameObject* gameObject)
     if (ImGui::CollapsingHeader("Camera", ImGuiTreeNodeFlags_DefaultOpen))
     {
         auto* camera = gameObject->GetComponent<Camera>();
+
+        showComponent = camera->isActive();
+        ImGui::Checkbox("Active", &showComponent);
+        camera->SetActive(showComponent);
 
         ImGui::Checkbox("Active", &camera->isActive());
         ImGui::Text(" ");

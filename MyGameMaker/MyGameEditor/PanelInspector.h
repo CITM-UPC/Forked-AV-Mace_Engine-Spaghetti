@@ -41,6 +41,7 @@ private:
 	bool showCheckers = false;
 	bool showWireframe = false;
 	bool uniformScale = false;
+	bool showComponent = false;
 
 	double min_value = 1.0f;
 	double max_value = 179.0f;
