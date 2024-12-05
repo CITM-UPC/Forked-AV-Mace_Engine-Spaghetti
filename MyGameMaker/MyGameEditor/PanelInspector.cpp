@@ -45,10 +45,9 @@ bool PanelInspector::Draw()
             for (auto& componentName : componentOptions)
             {
                 bool isDisabled = false;
-                if (componentName == "Transform" && selectedGameObject->HasComponent<Transform>() != nullptr)    isDisabled = true;
-                //else if (componentName == "Mesh" && selectedGameObject->HasComponent<Mesh>() != nullptr)         isDisabled = true;
-                else if (componentName == "Material" && selectedGameObject->HasComponent<Material>() != nullptr) isDisabled = true;
-                else if (componentName == "Camera" && selectedGameObject->HasComponent<Camera>() != nullptr)     isDisabled = true;
+                if (componentName == "Transform" && selectedGameObject->HasComponent<Transform>())    isDisabled = true;
+                else if (componentName == "Material" && selectedGameObject->HasComponent<Material>()) isDisabled = true;
+                else if (componentName == "Camera" && selectedGameObject->HasComponent<Camera>())     isDisabled = true;
 
                 if (isDisabled) {
                     ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.5f, 0.5f, 0.5f, 1.0f)); // Dimmed text color
@@ -57,10 +56,9 @@ bool PanelInspector::Draw()
 
                 if (ImGui::Selectable(componentName.c_str(), false, isDisabled ? ImGuiSelectableFlags_Disabled : 0))
                 {
-                    if (componentName == "Transform" && selectedGameObject->HasComponent<Transform>() == nullptr)       selectedGameObject->AddComponent<Transform>();
-                    //else if (componentName == "Mesh" && selectedGameObject->HasComponent<Mesh>() == nullptr)            selectedGameObject->AddComponent<Mesh>();
-                    else if (componentName == "Material" && selectedGameObject->HasComponent<Material>() == nullptr)    selectedGameObject->AddComponent<Material>();
-                    else if (componentName == "Camera" && selectedGameObject->HasComponent<Camera>() == nullptr)        selectedGameObject->AddComponent<Camera>();
+                    if (componentName == "Transform" && selectedGameObject->HasComponent<Transform>())       selectedGameObject->AddComponent<Transform>();
+                    else if (componentName == "Material" && selectedGameObject->HasComponent<Material>())    selectedGameObject->AddComponent<Material>();
+                    else if (componentName == "Camera" && selectedGameObject->HasComponent<Camera>())        selectedGameObject->AddComponent<Camera>();
                 }
 
                 if (isDisabled) {
@@ -138,7 +136,7 @@ void PanelInspector::DrawTransformControls(GameObject* gameObject)
 {
     if (ImGui::CollapsingHeader("Transform", ImGuiTreeNodeFlags_DefaultOpen))
     {
-        auto* transform = gameObject->HasComponent<Transform>();
+        auto* transform = gameObject->GetComponent<Transform>();
 
         showComponent = transform->isActive();
         ImGui::Checkbox("Active", &showComponent);
@@ -208,7 +206,7 @@ void PanelInspector::DrawMeshControls(GameObject* gameObject)
 {
     if (ImGui::CollapsingHeader("Mesh", ImGuiTreeNodeFlags_DefaultOpen))
     {
-        auto* mesh = gameObject->HasComponent<Mesh>();
+        auto* mesh = gameObject->GetComponent<Mesh>();
 
         showComponent = mesh->isActive();
 
@@ -229,7 +227,7 @@ void PanelInspector::DrawMeshControls(GameObject* gameObject)
         ImGui::Checkbox("Vertex Normals", &showPerTriangleNormals);
         mesh->setDebugNormals(showPerTriangleNormals);
 
-        showPerFaceNormals = gameObject->HasComponent<Mesh>()->getDebugFaceNormals();
+        showPerFaceNormals = gameObject->GetComponent<Mesh>()->getDebugFaceNormals();
         ImGui::Checkbox("Face Normals", &showPerFaceNormals);
         mesh->setDebugFaceNormals(showPerFaceNormals);
         ImGui::Separator();
@@ -240,7 +238,7 @@ void PanelInspector::DrawMaterialControls(GameObject* gameObject)
 {
     if (ImGui::CollapsingHeader("Material", ImGuiTreeNodeFlags_DefaultOpen))
     {
-        auto* material = gameObject->HasComponent<Material>();
+        auto* material = gameObject->GetComponent<Material>();
 
         showComponent = material->isActive();
         ImGui::Checkbox("Active", &showComponent);
@@ -274,7 +272,7 @@ void PanelInspector::DrawCameraControls(GameObject* gameObject)
 {
     if (ImGui::CollapsingHeader("Camera", ImGuiTreeNodeFlags_DefaultOpen))
     {
-        auto* camera = gameObject->HasComponent<Camera>();
+        auto* camera = gameObject->GetComponent<Camera>();
 
         showComponent = camera->isActive();
         ImGui::Checkbox("Active", &showComponent);
