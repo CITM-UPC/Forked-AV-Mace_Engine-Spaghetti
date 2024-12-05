@@ -141,10 +141,8 @@ void PanelInspector::DrawTransformControls(GameObject* gameObject)
         auto* transform = gameObject->GetComponent<Transform>();
 
         showComponent = transform->isActive();
-        if (ImGui::Checkbox("Active", &transform->isActive())) {
-            LOG(LogType::LOG_WARNING, "Transform Active checkbox was clicked!");
-            transform->SetActive(showComponent);
-        }
+        ImGui::Checkbox("Active", &showComponent);
+        transform->SetActive(showComponent);
 
         ImGui::SameLine();
         ImGui::Text("      X         Y         Z");
@@ -217,7 +215,6 @@ void PanelInspector::DrawMeshControls(GameObject* gameObject)
         ImGui::Checkbox("Active", &showComponent);
         mesh->SetActive(showComponent);
 
-        ImGui::Checkbox("Active", &mesh->isActive());
         ImGui::SameLine();
         ImGui::Text("  File:");
         ImGui::SameLine();
@@ -249,7 +246,6 @@ void PanelInspector::DrawMaterialControls(GameObject* gameObject)
         ImGui::Checkbox("Active", &showComponent);
         material->SetActive(showComponent);
 
-        ImGui::Checkbox("Active", &material->isActive());
         ImGui::Text(" ");
         ImGui::Text("Main Maps");
         ImVec4 magenta(1.0f, 0.0f, 1.0f, 1.0f); // Magenta
@@ -284,7 +280,6 @@ void PanelInspector::DrawCameraControls(GameObject* gameObject)
         ImGui::Checkbox("Active", &showComponent);
         camera->SetActive(showComponent);
 
-        ImGui::Checkbox("Active", &camera->isActive());
         ImGui::Text(" ");
         ImGui::Text("Projection:");
         ImGui::Text("Field of View");

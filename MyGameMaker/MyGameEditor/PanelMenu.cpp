@@ -5,6 +5,8 @@
 
 #include "MyGameEngine/Engine.h"
 #include "MyGameEngine/Scene.h"
+#include "MyGameEngine/GameObject.h"
+#include "MyGameEngine/Mesh.h"
 
 #include "PanelConsole.h"
 #include "PanelInspector.h"
@@ -205,9 +207,6 @@ bool PanelMenu::Draw()
                     {
                         //child->GetComponent<Mesh>()->setDebugFaceNormals(showPerFaceNormals);
                     }
-                }
-                if (ImGui::Checkbox("Face Normals", &show_faceNormals)) {
-
                 }
                 ImGui::EndMenu();
             }
