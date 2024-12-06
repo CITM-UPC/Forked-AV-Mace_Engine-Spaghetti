@@ -3,6 +3,8 @@
 #include "types.h"
 #include "BoundingBox.h"
 #include "GameObject.h"
+#include <glm/glm.hpp> 
+#include "Camera.h" 
 //#include "intersect.h"
 
 void drawAxis(double size);
@@ -12,3 +14,8 @@ void drawFloorGrid(double size, double step);
 void drawDebugInfoForGraphicObject(const GameObject& obj);
 //void drawSegment(const Segment& s);
 //void drawIntersectionPoint(const vec3& point);
+
+std::array<glm::dvec3, 8> computeFrustumCorners(const Camera& camera);
+
+void drawFrustum(const Camera& camera);
+void drawDebugInfoForCamera(const Camera& camera);
