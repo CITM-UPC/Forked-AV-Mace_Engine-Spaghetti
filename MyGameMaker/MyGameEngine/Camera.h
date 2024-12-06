@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Transform.h"
+#include "types.h"
 
 class Camera : public Component
 {
@@ -27,5 +28,9 @@ public:
 
 	glm::dmat4 projection() const;
 	glm::dmat4 view() const;
+
+	std::list<Plane> frustumPlanes() const;
+
+
 };
 

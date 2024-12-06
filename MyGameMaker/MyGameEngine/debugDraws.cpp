@@ -1,6 +1,7 @@
 #include "debugDraws.h"
 #include "GameObject.h"
 #include "Transform.h"
+#include "Camera.h"
 #include <GL/glew.h>
 
 inline static void glVertex3(const vec3& v) { glVertex3dv(&v.x); }
@@ -88,3 +89,51 @@ void drawIntersectionPoint(const vec3& point) {
 	glEnable(GL_DEPTH_TEST);
 }
 */
+
+// Helper function to compute the frustum corners in world space
+std::array<vec3, 8> computeFrustumCorners(const Camera& camera) {
+	glm::dmat4 invPV = glm::inverse(camera.projection() * camera.view());
+
+	std::array<vec4, 8> ndcCorners = {
+		vec4(-1, -1, -1, 1), vec4(1, -1, -1, 1), vec4(1, 1, -1, 1), vec4(-1, 1, -1, 1),
+		vec4(-1, -1,  1, 1), vec4(1, -1,  1, 1), vec4(1, 1,  1, 1), vec4(-1, 1,  1, 1),
+	};
+
+	std::array<vec3, 8> worldCorners;
+	for (size_t i = 0; i < 8; ++i) {
+		vec4 corner = invPV * ndcCorners[i];
+		worldCorners[i] = vec3(corner) / corner.w;
+	}
+
+	return worldCorners;
+}
+
+// Debug draw function for frustum planes
+void drawFrustum(const Camera& camera) {
+	auto corners = computeFrustumCorners(camera);
+
+	glLineWidth(2.0);
+	glColor3ub(255, 0, 255); // Magenta for frustum
+
+	// Draw near and far planes
+	drawWiredQuad(corners[0], corners[1], corners[2], corners[3]); // Near
+	drawWiredQuad(corners[4], corners[5], corners[6], corners[7]); // Far
+
+	// Draw left, right, top, and bottom planes
+	drawWiredQuad(corners[0], corners[3], corners[7], corners[4]); // Left
+	drawWiredQuad(corners[1], corners[2], corners[6], corners[5]); // Right
+	drawWiredQuad(corners[0], corners[1], corners[5], corners[4]); // Bottom
+	drawWiredQuad(corners[2], corners[3], corners[7], corners[6]); // Top
+}
+
+// Update the main debug function to include frustum visualization
+void drawDebugInfoForCamera(const Camera& camera) {
+	glPushMatrix();
+	glColor3ub(255, 255, 0); // Yellow for the camera origin
+	drawAxis(1.0);
+
+	// Draw the frustum
+	drawFrustum(camera);
+
+	glPopMatrix();
+}
