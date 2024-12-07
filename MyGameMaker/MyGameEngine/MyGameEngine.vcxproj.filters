@@ -96,6 +96,9 @@
     <ClInclude Include="debugDraws.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="PolymorphList.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Camera.cpp">

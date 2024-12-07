@@ -238,7 +238,7 @@ void Scene::Draw(GameObject* root)
 {
 	for (auto& child : root->children())
 	{
-		if (child.get()->isActive() && child->GetComponent<Mesh>() != nullptr && child->GetComponent<Mesh>()->isActive()) {
+		if (child.get()->isActive() && child->HasComponent<Mesh>() && child->GetComponent<Mesh>()->isActive()) {
 			child->GetComponent<Mesh>()->drawModel();
 		}
 

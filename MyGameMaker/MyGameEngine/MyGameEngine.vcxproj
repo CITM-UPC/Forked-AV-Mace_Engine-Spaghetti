@@ -147,6 +147,7 @@
     <ClInclude Include="ModelLoader.h" />
     <ClInclude Include="MyWindow.h" />
     <ClInclude Include="PerfTimer.h" />
+    <ClInclude Include="PolymorphList.h" />
     <ClInclude Include="readOnlyView.h" />
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="Scene.h" />
