@@ -7,6 +7,7 @@
 GameObject::GameObject(const std::string& name, const std::string& tag, bool active) : _name(name), _tag(tag), _active(active)
 {
 	this->AddComponent<Transform>();
+	this->AddComponent<Camera>();
 }
 
 bool GameObject::operator==(const GameObject& other) const

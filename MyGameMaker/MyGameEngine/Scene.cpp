@@ -51,6 +51,7 @@ void Scene::Start()
 		go->GetComponent<Transform>()->pos() = vec3(0, 0, 0);
 		go->GetComponent<Transform>()->updateGlobalMatrix();
 		go->AddComponent<Mesh>();
+		go->GetComponent<Camera>()->frustumPlanes();
 		go->GetComponent<Mesh>()->setModel(models[i]);
 		go->GetComponent<Mesh>()->setFilePath("Assets/FBX/BakerHouse.fbx");
 		go->AddComponent<Material>();
@@ -296,6 +297,7 @@ std::shared_ptr<GameObject> Scene::CreateGameObject(const std::string& name)
 void Scene::InitCamera()
 {
 	_camera.AddComponent<Camera>();
+	_camera.AddComponent<Camera>()->frustumPlanes();
 	_camera.GetComponent<Transform>()->translate(vec3(0, 3, 8));
 	_camera.GetComponent<Transform>()->rotate(glm::radians(180.0), vec3(0, 1, 0));
 	_camera.GetComponent<Transform>()->rotate(glm::radians(20.0), vec3(1, 0, 0));
