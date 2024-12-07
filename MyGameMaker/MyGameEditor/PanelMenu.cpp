@@ -22,6 +22,7 @@ PanelMenu::~PanelMenu() {}
 
 bool PanelMenu::Draw()
 {
+    
     if (ImGui::BeginMainMenuBar()) 
     {
         // File menu
@@ -240,19 +241,28 @@ bool PanelMenu::Draw()
             ImGui::EndMenu();
         }
 
-        // Menú Game
-        if (ImGui::BeginMenu("Game")) {
-            // Botón Play/Pause
-            if (ImGui::MenuItem(isPlaying ? "Pause" : "Play", "Ctrl+P")) {
-                isPlaying = !isPlaying;
-                if (isPlaying) {
-                    Engine::Instance().StartGame(); // Llama a la función de Start en el motor
-                }
-                else {
-                    Engine::Instance().PauseGame(); // Llama a la función de Pause en el motor
-                }
+        ImGui::SetNextWindowPos(ImVec2(ImGui::GetIO().DisplaySize.x / 2 - 100, 20), ImGuiCond_Always);
+        ImGui::SetNextWindowSize(ImVec2(200, 50));
+
+        if (ImGui::Begin("Game Controls", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoScrollbar))
+        {
+            ImGui::Columns(2, nullptr, false); 
+            ImGui::SetColumnWidth(0, 100);    
+            // Botón Play
+            if (ImGui::Button("Play", ImVec2(90, 40))) {
+                isPlaying = true;
+                Engine::Instance().StartGame(); 
             }
-            ImGui::EndMenu();
+
+            ImGui::NextColumn(); 
+
+            // Botón Pause
+            if (ImGui::Button("Pause", ImVec2(90, 40))) {
+                isPlaying = false;
+                Engine::Instance().PauseGame(); 
+            }
+
+            ImGui::End(); 
         }
 
 
