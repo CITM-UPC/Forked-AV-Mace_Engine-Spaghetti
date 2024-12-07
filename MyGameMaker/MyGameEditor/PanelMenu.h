@@ -25,6 +25,8 @@ private:
 
 	bool showPerTriangleNormals = true;
 	bool showPerFaceNormals = true;
+
+	bool isPlaying = false;
 };
 
 

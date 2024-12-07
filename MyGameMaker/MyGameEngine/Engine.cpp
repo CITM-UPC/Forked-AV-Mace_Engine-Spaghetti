@@ -1,5 +1,5 @@
 #include "Engine.h"
-
+#include <iostream>
 #include "MyWindow.h"
 #include "Input.h"
 #include "Renderer.h"
@@ -109,4 +109,14 @@ Engine::~Engine()
 void Engine::SwapBuffers()
 {
     window->swapBuffers();
+}
+
+void Engine::StartGame() {
+    
+    std::cout << "Game Started" << std::endl;
+}
+
+void Engine::PauseGame() {
+    
+    std::cout << "Game Paused" << std::endl;
 }

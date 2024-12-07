@@ -30,6 +30,10 @@ public:
 
 	void SwapBuffers();
 
+	void StartGame();
+	void PauseGame();
+
+
 	std::vector<LogInfo> GetLogs();
 	void AddLog(LogType type, const char* entry);
 	void CleanLogs();

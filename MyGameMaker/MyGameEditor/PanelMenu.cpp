@@ -240,6 +240,22 @@ bool PanelMenu::Draw()
             ImGui::EndMenu();
         }
 
+        // Menú Game
+        if (ImGui::BeginMenu("Game")) {
+            // Botón Play/Pause
+            if (ImGui::MenuItem(isPlaying ? "Pause" : "Play", "Ctrl+P")) {
+                isPlaying = !isPlaying;
+                if (isPlaying) {
+                    Engine::Instance().StartGame(); // Llama a la función de Start en el motor
+                }
+                else {
+                    Engine::Instance().PauseGame(); // Llama a la función de Pause en el motor
+                }
+            }
+            ImGui::EndMenu();
+        }
+
+
         ImGui::EndMainMenuBar();
     }
 
