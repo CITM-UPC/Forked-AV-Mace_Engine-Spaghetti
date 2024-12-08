@@ -49,11 +49,13 @@ void Scene::Start()
 		bakerHouse->addChild(go);
 
 		go->GetComponent<Transform>()->pos() = vec3(0, 0, 0);
+		go->GetComponent<Transform>()->rotate(glm::radians(-90.0), vec3(1, 0, 0));
+
 		go->GetComponent<Transform>()->updateGlobalMatrix();
 		go->AddComponent<Mesh>();
 		go->GetComponent<Camera>()->frustumPlanes();
 		go->GetComponent<Mesh>()->setModel(models[i]);
-		go->GetComponent<Mesh>()->setFilePath("Assets/FBX/street2.fbx");
+		go->GetComponent<Mesh>()->setFilePath("Assets/FBX/street2.fbx"); 
 		go->AddComponent<Material>();
 		go->GetComponent<Material>()->m_Texture = std::make_unique<Texture>("Assets/Textures/Building_V01_C.png");
 		go->GetComponent<Material>()->m_Shader = std::make_unique<Shader>("Assets/Shaders/Basic.shader");
