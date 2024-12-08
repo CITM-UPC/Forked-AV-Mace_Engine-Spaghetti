@@ -12,6 +12,8 @@ private:
     std::list<std::shared_ptr<T>> _children;
 
 public:
+
+
     auto& parent() { return *_parent; }
     const auto& parent() const { return _parent; }
     bool hasParent() const { return _parent != nullptr; }
@@ -42,27 +44,62 @@ public:
     void removeChild(const std::shared_ptr<T>& child) {
         _children.remove(child);
     }
-    // Unparent this node (removes from parent's children)
-    void unparent() {
-        if (_parent) {
-            auto sharedThis = std::shared_ptr<T>(static_cast<T*>(this));
-            _parent->_children.remove(sharedThis);
-            _parent = nullptr;
-        }
-    }
-    // Reparent this node to a new parent
-    void reparent(T* newParent) {
-        if (newParent != _parent) {
-            // Remove from old parent
-            unparent();
-
-            // Add to new parent
-            if (newParent) {
-                setParent(newParent);
-                auto sharedThis = std::shared_ptr<T>(static_cast<T*>(this));
-                newParent->_children.push_back(sharedThis);
+    // Get shared pointer to this object from a child's list
+    std::shared_ptr<T> getSharedFromChildren(T* ptr) {
+        for (const auto& child : _children) {
+            if (child.get() == ptr) {
+                return child;
             }
         }
+        return nullptr;
+    }
+    // Unparent this node (removes from parent's children)
+    bool unparent() {
+        if (_parent) {
+            // Find our shared_ptr in parent's children
+            auto selfPtr = _parent->getSharedFromChildren(static_cast<T*>(this));
+            if (selfPtr) {
+                _parent->_children.remove(selfPtr);
+                _parent = nullptr;
+                return true;
+            }
+        }
+        return false;
+    }
+    // Reparent this node to a new parent
+    bool reparent(T* newParent) {
+        if (!newParent || newParent == this) {
+            return false;
+        }
+
+        // Check for circular reference
+        T* ancestor = newParent;
+        while (ancestor) {
+            if (ancestor == this) {
+                return false;
+            }
+            ancestor = ancestor->_parent;
+        }
+
+        if (newParent != _parent) {
+            // Get our shared_ptr from current parent
+            std::shared_ptr<T> selfPtr;
+            if (_parent) {
+                selfPtr = _parent->getSharedFromChildren(static_cast<T*>(this));
+                if (!selfPtr) {
+                    return false;
+                }
+                _parent->_children.remove(selfPtr);
+            }
+
+            // Set new parent
+            _parent = newParent;
+            if (selfPtr) {
+                newParent->_children.push_back(selfPtr);
+            }
+            return true;
+        }
+        return false;   
     }
     // Check if this node is a descendant of potential ancestor
     bool isDescendantOf(const T* potentialAncestor) const {
