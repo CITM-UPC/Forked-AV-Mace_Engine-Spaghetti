@@ -39,6 +39,10 @@ void Engine::Start()
     input->Start();
     renderer->Start();
     scene->Start();
+
+    if (!std::filesystem::exists("Library")) {
+        std::filesystem::create_directory("Library");
+    }
 }
 
 bool Engine::PreUpdate()

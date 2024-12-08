@@ -73,6 +73,8 @@ void ModelLoader::load(const std::string& filename, std::vector<std::shared_ptr<
 
 			models[i]->SetModelData(*modelsData[i]);
 
+			models[i]->SaveModelData(models[i]->GetMeshName() + ".model");
+
 		}
 
 	}
@@ -341,4 +343,6 @@ void ModelLoader::load(Shapes shape, std::shared_ptr<Model>& model)
 	}
 
 	model->SetModelData(*modelData);
+
+	model->SaveModelData(model->GetMeshName() + ".model");
 }

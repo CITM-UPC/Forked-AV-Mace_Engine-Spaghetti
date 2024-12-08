@@ -3,6 +3,7 @@
 #include <vector>
 #include <string>
 
+
 #include "types.h"
 
 enum class Shapes
@@ -40,6 +41,8 @@ public:
 	void SetMeshName(const std::string& meshName) { this->meshName = meshName; }
 
 	void SetModelData(const ModelData& modelData) { this->modelData = modelData; }
+
+	void SaveModelData(const std::string& filepath);
 private:
 	std::string meshName;
 	ModelData modelData;
