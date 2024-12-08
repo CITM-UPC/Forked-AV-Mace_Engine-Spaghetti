@@ -42,4 +42,33 @@ public:
     void removeChild(const std::shared_ptr<T>& child) {
         _children.remove(child);
     }
+    // Unparent this node (removes from parent's children)
+    void unparent() {
+        if (_parent) {
+            auto sharedThis = std::shared_ptr<T>(static_cast<T*>(this));
+            _parent->_children.remove(sharedThis);
+            _parent = nullptr;
+        }
+    }
+    // Reparent this node to a new parent
+    void reparent(T* newParent) {
+        if (newParent != _parent) {
+            // Remove from old parent
+            unparent();
+
+            // Add to new parent
+            if (newParent) {
+                setParent(newParent);
+                auto sharedThis = std::shared_ptr<T>(static_cast<T*>(this));
+                newParent->_children.push_back(sharedThis);
+            }
+        }
+    }
+    // Check if this node is a descendant of potential ancestor
+    bool isDescendantOf(const T* potentialAncestor) const {
+        if (!_parent) return false;
+        if (_parent == potentialAncestor) return true;
+        return _parent->isDescendantOf(potentialAncestor);
+    }
+
 };

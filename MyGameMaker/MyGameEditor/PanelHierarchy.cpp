@@ -64,6 +64,16 @@ bool PanelHierarchy::Draw()
 
        ImGui::EndPopup();
    }
+   // Handle dropping at root level
+   if (ImGui::BeginDragDropTarget()) {
+       if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("GAMEOBJECT_DRAG")) {
+           GameObject* draggedObject = *(GameObject**)payload->Data;
+           draggedObject->reparent(Engine::Instance().scene->root());
+       }
+       ImGui::EndDragDropTarget();
+   }
+
+
    ImGui::End();
 
    if (!showWindow) {
@@ -80,9 +90,34 @@ void PanelHierarchy::DrawGameObjectTree(GameObject* gameObject)
 	ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick;
 	if (selectedGameObject() == gameObject) flags |= ImGuiTreeNodeFlags_Selected;
 
-	bool isNodeOpen = ImGui::TreeNodeEx(gameObject->name().c_str(), flags);
-	if (ImGui::IsItemClicked()) SetSelectedGameObject(gameObject);
+    // Add drag source identifier
+    char uniqueLabel[256];
+    sprintf(uniqueLabel, "%s##%p", gameObject->name().c_str(), (void*)gameObject);
 
+	bool isNodeOpen = ImGui::TreeNodeEx(gameObject->name().c_str(), flags);
+    // Handle selection
+    if (ImGui::IsItemClicked()) {
+        SetSelectedGameObject(gameObject);
+    }
+
+    // Begin drag source
+    if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None)) {
+        ImGui::SetDragDropPayload("GAMEOBJECT_DRAG", &gameObject, sizeof(GameObject*));
+        ImGui::Text("Moving %s", gameObject->name().c_str());
+        ImGui::EndDragDropSource();
+    }
+    // Handle drop target
+    if (ImGui::BeginDragDropTarget()) {
+        if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("GAMEOBJECT_DRAG")) {
+            GameObject* draggedObject = *(GameObject**)payload->Data;
+
+            // Prevent dropping an object onto itself or its descendants
+            if (draggedObject != gameObject && !gameObject->isDescendantOf(draggedObject)) {
+                draggedObject->reparent(gameObject);
+            }
+        }
+        ImGui::EndDragDropTarget();
+    }
 	if (isNodeOpen) {
 		for (const std::shared_ptr<GameObject>& childObjectPtr : gameObject->children()) {
 			DrawGameObjectTree(childObjectPtr.get());
