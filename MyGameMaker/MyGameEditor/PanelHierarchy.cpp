@@ -92,7 +92,7 @@ void PanelHierarchy::DrawGameObjectTree(GameObject* gameObject)
 
     // Add drag source identifier
     char uniqueLabel[256];
-    sprintf(uniqueLabel, "%s##%p", gameObject->name().c_str(), (void*)gameObject);
+    sprintf_s(uniqueLabel, "%s##%p", gameObject->name().c_str(), (void*)gameObject);
 
 	bool isNodeOpen = ImGui::TreeNodeEx(gameObject->name().c_str(), flags);
     // Handle selection
