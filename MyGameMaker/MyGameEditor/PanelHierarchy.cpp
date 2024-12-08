@@ -27,6 +27,9 @@ bool PanelHierarchy::Draw()
    if (ImGui::IsMouseClicked(0) && !ImGui::IsAnyItemHovered() && ImGui::IsWindowHovered()) {
 	   SetSelectedGameObject(nullptr); 
    }
+
+   // Create a child window to handle root-level drops
+   ImGui::BeginChild("HierarchyRoot", ImVec2(0, 0), false);
    
    for (const std::shared_ptr<GameObject>& gameObjectPtr : Engine::Instance().scene->root()->children()) {
 	   DrawGameObjectTree(gameObjectPtr.get());
@@ -65,19 +68,39 @@ bool PanelHierarchy::Draw()
        ImGui::EndPopup();
    }
 
-   // Handle root level drops
+   // Handle root-level drag and drop
+       // This needs to be active for the entire window area
    if (ImGui::BeginDragDropTarget()) {
        if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("GAMEOBJECT_DRAG")) {
            IM_ASSERT(payload->DataSize == sizeof(GameObject*));
            GameObject* draggedObject = *static_cast<GameObject**>(payload->Data);
 
            if (draggedObject) {
-               draggedObject->reparent(Engine::Instance().scene->root());
+               // Get the root GameObject from the scene
+               GameObject* root = Engine::Instance().scene->root();
+               if (draggedObject->parent() != root) {
+                   draggedObject->reparent(root);
+               }
            }
        }
        ImGui::EndDragDropTarget();
    }
 
+   ImGui::EndChild();
+
+   // Right-click context menu
+   if (ImGui::IsMouseClicked(1) && ImGui::IsWindowHovered()) {
+       ImGui::OpenPopup("CreateGameObjectPopup");
+   }
+
+   // Create GameObjects Popup
+   if (ImGui::BeginPopup("CreateGameObjectPopup")) {
+       if (ImGui::MenuItem("Create Empty")) {
+           Engine::Instance().scene->CreateGameObject();
+       }
+       // ... rest of your popup menu items ...
+       ImGui::EndPopup();
+   }
 
    ImGui::End();
 
@@ -100,6 +123,11 @@ void PanelHierarchy::DrawGameObjectTree(GameObject* gameObject)
 
     if (selectedGameObject() == gameObject) {
         flags |= ImGuiTreeNodeFlags_Selected;
+    }
+
+    // If the object has no children, make it a leaf node
+    if (gameObject->children().empty()) {
+        flags |= ImGuiTreeNodeFlags_Leaf;
     }
 
     // Add drag source identifier
@@ -127,7 +155,7 @@ void PanelHierarchy::DrawGameObjectTree(GameObject* gameObject)
         ImGui::Text("Moving %s", gameObject->name().c_str());
         ImGui::EndDragDropSource();
     }
-    // Handle drop target
+    // Handle drop target (for parenting to this object)
     if (ImGui::BeginDragDropTarget()) {
         if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("GAMEOBJECT_DRAG")) {
             IM_ASSERT(payload->DataSize == sizeof(GameObject*));
