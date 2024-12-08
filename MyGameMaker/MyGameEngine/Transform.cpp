@@ -40,27 +40,40 @@ void Transform::scale(const vec3& s)
 void Transform::updateGlobalMatrix()
 {
     std::queue<Transform*> toUpdate;
-	isDirty = true;
+    isDirty = true;
     toUpdate.push(this);
 
     while (!toUpdate.empty()) {
         Transform* current = toUpdate.front();
         toUpdate.pop();
 
-        if (current->isDirty) 
+        if (current->isDirty)
         {
-            if (current->getOwner()->parent().hasParent()) {
-                current->global_mat = current->getOwner()->parent().GetComponent<Transform>()->glob_mat() * current->local_mat;
+            GameObject* parentObject = current->getOwner()->parent();
+            if (parentObject != nullptr) {
+                // Parent exists, multiply with parent's global transform
+                Transform* parentTransform = parentObject->GetComponent<Transform>();
+                if (parentTransform) {
+                    current->global_mat = parentTransform->glob_mat() * current->local_mat;
+                }
+                else {
+                    current->global_mat = current->local_mat;
+                }
             }
             else {
+                // No parent, local is global
                 current->global_mat = current->local_mat;
             }
-            current->isDirty = false; 
 
-            for (auto& child : current->getOwner()->children()) 
+            current->isDirty = false;
+
+            // Update all children
+            for (const auto& child : current->getOwner()->children())
             {
-                child->GetComponent<Transform>()->isDirty = true;
-                toUpdate.push(child->GetComponent<Transform>());
+                if (child && child->GetComponent<Transform>()) {
+                    child->GetComponent<Transform>()->isDirty = true;
+                    toUpdate.push(child->GetComponent<Transform>());
+                }
             }
         }
     }

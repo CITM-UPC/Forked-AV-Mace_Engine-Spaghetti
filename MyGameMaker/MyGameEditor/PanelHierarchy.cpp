@@ -68,16 +68,16 @@ bool PanelHierarchy::Draw()
        ImGui::EndPopup();
    }
 
-   // Handle root-level drag and drop
-       // This needs to be active for the entire window area
+
+   // Updated drop target handling
    if (ImGui::BeginDragDropTarget()) {
        if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("GAMEOBJECT_DRAG")) {
            IM_ASSERT(payload->DataSize == sizeof(GameObject*));
            GameObject* draggedObject = *static_cast<GameObject**>(payload->Data);
 
            if (draggedObject) {
-               // Get the root GameObject from the scene
                GameObject* root = Engine::Instance().scene->root();
+               // Compare pointers directly now that parent() returns a pointer
                if (draggedObject->parent() != root) {
                    draggedObject->reparent(root);
                }

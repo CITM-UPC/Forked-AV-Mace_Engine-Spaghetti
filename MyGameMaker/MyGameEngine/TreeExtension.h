@@ -13,9 +13,9 @@ private:
 
 public:
 
-
-    auto& parent() { return *_parent; }
-    const auto& parent() const { return _parent; }
+    // Change to return pointer instead of reference
+    T* parent() { return _parent; }
+    const T* parent() const { return _parent; }
     bool hasParent() const { return _parent != nullptr; }
 	auto& setParent(T* parent) { 
         _parent = parent; 
