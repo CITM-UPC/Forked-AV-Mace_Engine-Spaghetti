@@ -38,11 +38,11 @@ void Scene::Start()
 	// Init camera
 	InitCamera();
 
-	std::shared_ptr<GameObject> bakerHouse = CreateGameObject("BakerHouse");
+	std::shared_ptr<GameObject> bakerHouse = CreateGameObject("Street");
 
 	ModelLoader modelLoader;
 	std::vector<std::shared_ptr<Model>> models;
-	modelLoader.load("Assets/FBX/BakerHouse.fbx", models);
+	modelLoader.load("Assets/FBX/street2.fbx", models);
 	for (size_t i = 0; i < models.size(); i++)
 	{
 		std::shared_ptr<GameObject> go = std::make_shared<GameObject>(models[i].get()->GetMeshName());
@@ -53,9 +53,9 @@ void Scene::Start()
 		go->AddComponent<Mesh>();
 		go->GetComponent<Camera>()->frustumPlanes();
 		go->GetComponent<Mesh>()->setModel(models[i]);
-		go->GetComponent<Mesh>()->setFilePath("Assets/FBX/BakerHouse.fbx");
+		go->GetComponent<Mesh>()->setFilePath("Assets/FBX/street2.fbx");
 		go->AddComponent<Material>();
-		go->GetComponent<Material>()->m_Texture = std::make_unique<Texture>("Assets/Textures/Baker_house.png");
+		go->GetComponent<Material>()->m_Texture = std::make_unique<Texture>("Assets/Textures/Building_V01_C.png");
 		go->GetComponent<Material>()->m_Shader = std::make_unique<Shader>("Assets/Shaders/Basic.shader");
 		go->GetComponent<Mesh>()->loadToOpenGL();
 	}
