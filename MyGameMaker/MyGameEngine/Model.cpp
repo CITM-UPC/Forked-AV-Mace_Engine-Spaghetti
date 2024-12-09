@@ -48,5 +48,5 @@ void Model::SaveModelData(const std::string& filepath) {
     file.close();
 }
 void Model::AddTexture(const std::string& texturePath) {
-    textures.push_back(texturePath);
+	this->texturepath = texturePath;
 }

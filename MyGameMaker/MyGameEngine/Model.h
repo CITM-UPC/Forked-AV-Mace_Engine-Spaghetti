@@ -26,7 +26,7 @@ struct ModelData
 	std::vector<vec2> vertex_texCoords;
 	std::vector<vec3> vertex_normals;
 	std::vector<vec3> vertex_colors;
-	std::string texturepath;
+	
 
 };
 
@@ -36,6 +36,7 @@ public:
 	Model() {}
 	~Model() {}
 
+	std::string texturepath;
 	std::string& GetMeshName() { return meshName; }
 
 	ModelData& GetModelData() { return modelData; }
@@ -46,10 +47,12 @@ public:
 
 	void SaveModelData(const std::string& filepath);
 
+	std::string GetTexturePath() { return texturepath; }
+
 	void AddTexture(const std::string& texturePath);
 private:
 	std::string meshName;
 	ModelData modelData;
-	std::vector<std::string> textures;
+	
 };
 

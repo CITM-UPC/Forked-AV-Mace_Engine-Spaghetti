@@ -55,12 +55,20 @@ void Scene::Start()
 		go->AddComponent<Mesh>();
 		go->GetComponent<Camera>()->frustumPlanes();
 		go->GetComponent<Mesh>()->setModel(models[i]);
-		go->GetComponent<Mesh>()->setFilePath("Assets/FBX/street2.fbx"); 
-		go->AddComponent<Material>();
 		
 
-		/*go->GetComponent<Material>()->m_Texture = std::make_unique<Texture>("Assets/Textures/building 01_c.tga");
-		go->GetComponent<Material>()->m_Texture = std::make_unique<Texture>("Assets/Textures/building 06_ c.tga");
+
+		go->GetComponent<Mesh>()->setFilePath("Assets/FBX/street2.fbx"); 
+		go->AddComponent<Material>();
+
+		
+			std::string texturePath = models[i].get()->GetTexturePath();
+			go->GetComponent<Material>()->m_Texture = std::make_unique<Texture>(texturePath);
+		
+		
+		/*go->GetComponent<Material>()->m_Texture = std::make_unique<Texture>("Assets/Textures/building 01_c.tga");*/
+		std::cout << "Textura : " << models[i].get()->GetTexturePath() << std::endl;
+		/*go->GetComponent<Material>()->m_Texture = std::make_unique<Texture>("Assets/Textures/building 06_ c.tga");
 		go->GetComponent<Material>()->m_Texture = std::make_unique<Texture>("Assets/Textures/building 06_ c.tga");
 		go->GetComponent<Material>()->m_Texture = std::make_unique<Texture>("Assets/Textures/building_016_c.tga");
 		go->GetComponent<Material>()->m_Texture = std::make_unique<Texture>("Assets/Textures/building_025_c.tga");

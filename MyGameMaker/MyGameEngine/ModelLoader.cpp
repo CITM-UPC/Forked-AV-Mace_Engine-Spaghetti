@@ -50,7 +50,7 @@ void ModelLoader::load(const std::string& filename, std::vector<std::shared_ptr<
 					std::string fileName = filePath.filename().string();
 
 					// Construir la nueva ruta con un directorio específico
-					std::string newDirectory = ".../MyGameEditor/Assets/Textures/";
+					std::string newDirectory = "Assets/Textures/";
 					std::string newPath = newDirectory + fileName;
 
 					std::cout << "Textura difusa: " << newPath << std::endl;
