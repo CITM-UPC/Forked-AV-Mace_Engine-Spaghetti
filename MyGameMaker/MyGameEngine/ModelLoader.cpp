@@ -3,7 +3,7 @@
 #include <assimp/Importer.hpp>      
 #include <assimp/scene.h>           
 #include <assimp/postprocess.h>
-
+#include <filesystem>
 #include <iostream>
 
 void ModelLoader::load(const std::string& filename, std::vector<std::shared_ptr<Model>>& models) const
@@ -34,6 +34,30 @@ void ModelLoader::load(const std::string& filename, std::vector<std::shared_ptr<
 			modelsData[i] = std::make_shared<ModelData>();
 			models[i] = std::make_shared<Model>();
 			models[i]->SetMeshName(mesh->mName.C_Str());
+
+			// Obtener el material del mesh
+			aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
+
+			// Obtener la textura difusa (si existe)
+			if (material->GetTextureCount(aiTextureType_DIFFUSE) > 0) {
+				aiString path;
+				if (material->GetTexture(aiTextureType_DIFFUSE, 0, &path) == AI_SUCCESS) {
+					std::string texturePath = path.C_Str();
+					
+
+					// Extraer solo el nombre del archivo
+					std::filesystem::path filePath(texturePath);
+					std::string fileName = filePath.filename().string();
+
+					// Construir la nueva ruta con un directorio específico
+					std::string newDirectory = ".../MyGameEditor/Assets/Textures/";
+					std::string newPath = newDirectory + fileName;
+
+					std::cout << "Textura difusa: " << newPath << std::endl;
+					// Aquí puedes cargar la textura usando tu método preferido
+					models[i]->AddTexture(newPath);
+				}
+			}
 
 			for (unsigned int j = 0; j < mesh->mNumVertices; j++) {
 

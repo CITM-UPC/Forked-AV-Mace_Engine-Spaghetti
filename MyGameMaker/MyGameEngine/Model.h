@@ -26,6 +26,8 @@ struct ModelData
 	std::vector<vec2> vertex_texCoords;
 	std::vector<vec3> vertex_normals;
 	std::vector<vec3> vertex_colors;
+	std::string texturepath;
+
 };
 
 class Model
@@ -43,8 +45,11 @@ public:
 	void SetModelData(const ModelData& modelData) { this->modelData = modelData; }
 
 	void SaveModelData(const std::string& filepath);
+
+	void AddTexture(const std::string& texturePath);
 private:
 	std::string meshName;
 	ModelData modelData;
+	std::vector<std::string> textures;
 };
 
