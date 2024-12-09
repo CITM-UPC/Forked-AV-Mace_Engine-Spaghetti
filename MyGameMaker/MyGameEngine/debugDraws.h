@@ -1,10 +1,14 @@
 #pragma once
+#ifndef DEBUGDRAWS_H
+#define DEBUGDRAWS_H
 
 #include "types.h"
 #include "BoundingBox.h"
 #include "GameObject.h"
 #include <glm/glm.hpp> 
 #include "Camera.h" 
+#include "Scene.h"
+
 //#include "intersect.h"
 
 void drawAxis(double size);
@@ -19,3 +23,7 @@ std::array<glm::dvec3, 8> computeFrustumCorners(const Camera& camera);
 
 void drawFrustum(const Camera& camera);
 void drawDebugInfoForCamera(const Camera& camera);
+
+void DrawBoundingBox(const BoundingBox& bbox);
+
+#endif // DEBUGDRAWS_H

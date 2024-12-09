@@ -1,9 +1,12 @@
 ﻿#include "Scene.h"
 #include "types.h"
 #include "Camera.h"
+#include "GameObject.h"
+#include "BoundingBox.h"
 
 #include <glm/glm.hpp>
 #include <memory>
+#include <GL/glut.h>
 #include <iostream>
 
 #include "Engine.h"
@@ -33,13 +36,18 @@ float fovModifier = 0;
 float zoomValue = 0;
 bool isZooming = false;
 
+
+
 void Scene::Start()
 {
 	// Init camera
 	InitCamera();
+	gameObjects.clear();
 
+	std::vector<GameObject> gameObjects;
 	std::shared_ptr<GameObject> bakerHouse = CreateGameObject("Street");
 
+	
 	ModelLoader modelLoader;
 	std::vector<std::shared_ptr<Model>> models;
 	modelLoader.load("Assets/FBX/street2.fbx", models);
@@ -62,8 +70,8 @@ void Scene::Start()
 		go->AddComponent<Material>();
 
 		
-			std::string texturePath = models[i].get()->GetTexturePath();
-			go->GetComponent<Material>()->m_Texture = std::make_unique<Texture>(texturePath);
+		std::string texturePath = models[i].get()->GetTexturePath();
+		go->GetComponent<Material>()->m_Texture = std::make_unique<Texture>(texturePath);
 		
 		
 		/*go->GetComponent<Material>()->m_Texture = std::make_unique<Texture>("Assets/Textures/building 01_c.tga");*/
@@ -77,8 +85,21 @@ void Scene::Start()
 		go->GetComponent<Material>()->m_Texture = std::make_unique<Texture>("Assets/Textures/building03_c.tga");
 		go->GetComponent<Material>()->m_Texture = std::make_unique<Texture>("Assets/Textures/building05 _c.tga");*/
 
+
 		go->GetComponent<Material>()->m_Shader = std::make_unique<Shader>("Assets/Shaders/Basic.shader");
 		go->GetComponent<Mesh>()->loadToOpenGL();
+
+		BoundingBox cubo;
+
+		cubo.min = models[i].get()->GetModelData().vertexData.front();
+		cubo.max = models[i].get()->GetModelData().vertexData.front();
+
+		for (const auto& v : models[i].get()->GetModelData().vertexData) {
+			cubo.min = glm::min(cubo.min, glm::dvec3(v));
+			cubo.max = glm::max(cubo.max, glm::dvec3(v));
+		}
+
+		go->boundingBox = cubo;
 	}
 }
 
@@ -258,10 +279,20 @@ void Scene::OnSceneChange() {}
 
 void Scene::Draw(GameObject* root)
 {
+
 	for (auto& child : root->children())
 	{
 		if (child.get()->isActive() && child->HasComponent<Mesh>() && child->GetComponent<Mesh>()->isActive()) {
 			child->GetComponent<Mesh>()->drawModel();
+			BoundingBox oper = child->GetComponent<Transform>()->mat() * child->boundingBox;
+
+			glLineWidth(2.0);
+			drawWiredQuad(oper.v000(), oper.v001(), oper.v011(), oper.v010());
+			drawWiredQuad(oper.v100(), oper.v101(), oper.v111(), oper.v110());
+			drawWiredQuad(oper.v000(), oper.v001(), oper.v101(), oper.v100());
+			drawWiredQuad(oper.v010(), oper.v011(), oper.v111(), oper.v110());
+			drawWiredQuad(oper.v000(), oper.v010(), oper.v110(), oper.v100());
+			drawWiredQuad(oper.v001(), oper.v011(), oper.v111(), oper.v101());
 		}
 
 		if (!child->children().empty()) Draw(child.get());

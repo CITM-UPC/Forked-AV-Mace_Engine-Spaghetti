@@ -1,6 +1,12 @@
 //imgui and panels
 #include "MyGUI.h"
 
+#include "MyGameEngine/Scene.h"
+#include "MyGameEngine/Scene.cpp"
+#include "MyGameEngine/GameObject.h"
+#include "MyGameEngine/BoundingBox.h"
+
+
 //engine
 #include "MyGameEngine/Engine.h"
 
@@ -10,6 +16,7 @@
 
 //utils
 #include "MyGameEngine/PerfTimer.h"
+
 
 using namespace std;
 
@@ -68,5 +75,8 @@ int main(int argc, char* argv[]) {
 	gui.CleanUp();
 	engine.CleanUp();
 
+
+
 	return 0;
+
 }

@@ -6,6 +6,7 @@
 #include <vector>
 #include "TreeExtension.h"
 #include "Component.h"
+#include "BoundingBox.h"
 
 class Component;
 
@@ -15,8 +16,14 @@ class GameObject : public TreeExtension<GameObject>
 	std::string _tag;
 	bool _active;
 	std::vector<Component*> _components;
+	std::vector<vec3> vertices;
+	
+	
 
 public:
+
+	BoundingBox boundingBox;
+
 	GameObject(const std::string& name, const std::string& tag = "Untagged", bool active = true);
 	~GameObject() {}
 
@@ -26,6 +33,8 @@ public:
 	auto& isActive() { return _active; }
 	virtual bool SetActive(bool active) { return this->_active = active; }
 	virtual bool SwitchState() { return _active = !_active; }
+
+	
 
 	template <typename T>
 	std::shared_ptr<GameObject> FindChildWithComponent() const {

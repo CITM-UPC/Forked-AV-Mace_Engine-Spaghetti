@@ -9,17 +9,24 @@
 
 #include "Camera.h"
 
+#include <vector>
+
 class Scene
 {
 	std::string _name;
 	bool _active;
 	GameObject* _root = new GameObject("SceneRoot");
 	GameObject _camera = GameObject("EditorCamera", "Camera");
+	
 
 public:
+
 	Scene(const std::string& name, bool active = true) : _name(name), _active(active) {}
 	~Scene() {}
 
+	std::vector<GameObject> gameObjects; 
+
+	
 	GameObject* root() { return _root; }
 	GameObject* camera() { return &_camera; }
 
@@ -43,6 +50,7 @@ public:
 	void CreateCylinder();
 	void CreateCone();
 	void CreateTorus();
+
 };
 
 #endif // !__SCENE_H__

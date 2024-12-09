@@ -1,4 +1,7 @@
 #include "BoundingBox.h"
+#include <GL/glut.h>
+
+
 
 BoundingBox::BoundingBox(const vec3* vertices, size_t num_verts) {
 	min = max = vertices[0];
@@ -8,12 +11,14 @@ BoundingBox::BoundingBox(const vec3* vertices, size_t num_verts) {
 	}
 }
 
+
 BoundingBox BoundingBox::operator+(const BoundingBox& other) const {
 	BoundingBox result;
 	result.min = glm::min(min, other.min);
 	result.max = glm::max(max, other.max);
 	return result;
 }
+
 
 BoundingBox operator*(const mat4& mat, const BoundingBox& bbox) {
 	auto vertices = bbox.vertices();

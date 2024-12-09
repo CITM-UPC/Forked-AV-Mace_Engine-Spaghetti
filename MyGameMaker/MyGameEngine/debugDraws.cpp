@@ -3,8 +3,13 @@
 #include "Transform.h"
 #include "Camera.h"
 #include <GL/glew.h>
+#include <GL/gl.h>
 
 inline static void glVertex3(const vec3& v) { glVertex3dv(&v.x); }
+
+std::array<GLfloat, 3> ToGLFloat(const glm::vec3& vec) {
+	return { static_cast<GLfloat>(vec.x), static_cast<GLfloat>(vec.y), static_cast<GLfloat>(vec.z) };
+}
 
 void drawAxis(double size) {
 	glLineWidth(2.0);
@@ -43,6 +48,7 @@ void drawFloorGrid(double size, double step) {
 	glEnd();
 }
 
+
 static void drawBoundingBox(const BoundingBox& bbox) {
 	glLineWidth(2.0);
 	drawWiredQuad(bbox.v000(), bbox.v001(), bbox.v011(), bbox.v010());
@@ -51,6 +57,11 @@ static void drawBoundingBox(const BoundingBox& bbox) {
 	drawWiredQuad(bbox.v010(), bbox.v011(), bbox.v111(), bbox.v110());
 	drawWiredQuad(bbox.v000(), bbox.v010(), bbox.v110(), bbox.v100());
 	drawWiredQuad(bbox.v001(), bbox.v011(), bbox.v111(), bbox.v101());
+
+
+	auto vertices = bbox.vertices();
+
+	glBegin(GL_LINES);
 }
 
 void drawDebugInfoForGraphicObject(const GameObject& obj) {

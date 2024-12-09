@@ -1,7 +1,7 @@
 #pragma once
 
 #include "types.h"
-
+#include <iostream>
 #include <array>
 
 struct BoundingBox {
@@ -26,8 +26,9 @@ struct BoundingBox {
 	BoundingBox(const vec3* vertices, size_t num_verts);
 
 	BoundingBox operator+(const BoundingBox& other) const;
+
+
 };
 
 
 BoundingBox operator*(const mat4& mat, const BoundingBox& bbox);
-
