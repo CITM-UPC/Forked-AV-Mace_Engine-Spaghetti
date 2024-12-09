@@ -14,6 +14,9 @@ m_Width(0), m_Height(0), m_BPP(0)
 	GLCall(glGenTextures(1, &m_RendererID));
 	GLCall(glBindTexture(GL_TEXTURE_2D, m_RendererID));
 
+	const auto origin = ilGetInteger(IL_IMAGE_ORIGIN);
+	if (origin != IL_ORIGIN_UPPER_LEFT) iluFlipImage();
+
 	// Generar Mipmap y configurar parámetros de textura
 	glGenerateMipmap(GL_TEXTURE_2D);
 	//GL_TEXTURE_MIN_FILTER per si la imatge es mes gran que el pla on es pinta i GL_TEXTURE_MAG_FILTER pel contrari

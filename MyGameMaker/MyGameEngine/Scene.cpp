@@ -57,13 +57,13 @@ void Scene::Start()
 		go->GetComponent<Mesh>()->setModel(models[i]);
 		go->GetComponent<Mesh>()->setFilePath("Assets/FBX/street2.fbx"); 
 		go->AddComponent<Material>();
-		/*go->GetComponent<Material>()->m_Texture = std::make_unique<Texture>("Assets/Textures/building 01_c.tga");
-		go->GetComponent<Material>()->m_Texture = std::make_unique<Texture>("Assets/Textures/building 06_ c.tga");
+		go->GetComponent<Material>()->m_Texture = std::make_unique<Texture>("Assets/Textures/building 01_c.tga");
+		/*go->GetComponent<Material>()->m_Texture = std::make_unique<Texture>("Assets/Textures/building 06_ c.tga");
 		go->GetComponent<Material>()->m_Texture = std::make_unique<Texture>("Assets/Textures/building 06_ c.tga");
 		go->GetComponent<Material>()->m_Texture = std::make_unique<Texture>("Assets/Textures/building_016_c.tga");
-		go->GetComponent<Material>()->m_Texture = std::make_unique<Texture>("Assets/Textures/building_025_c.tga");*/
+		go->GetComponent<Material>()->m_Texture = std::make_unique<Texture>("Assets/Textures/building_025_c.tga");
 		go->GetComponent<Material>()->m_Texture = std::make_unique<Texture>("Assets/Textures/Building_V01_C.png");
-		/*go->GetComponent<Material>()->m_Texture = std::make_unique<Texture>("Assets/Textures/Building_V02_C.png");
+		go->GetComponent<Material>()->m_Texture = std::make_unique<Texture>("Assets/Textures/Building_V02_C.png");
 		go->GetComponent<Material>()->m_Texture = std::make_unique<Texture>("Assets/Textures/building03_c.tga");
 		go->GetComponent<Material>()->m_Texture = std::make_unique<Texture>("Assets/Textures/building05 _c.tga");*/
 
