@@ -126,6 +126,9 @@ bool PanelMenu::Draw()
 				if (ImGui::MenuItem("Inspector", nullptr, MyGUI::Instance().inspector().GetState())) {
 					MyGUI::Instance().inspector().SwitchState();
 				}
+                if (ImGui::MenuItem("Assets", nullptr, MyGUI::Instance().assets().GetState())) {
+                    MyGUI::Instance().assets().SwitchState();
+                }
                 if (ImGui::MenuItem("Scene", nullptr, nullptr, false)) {
                     // Action for "Undo" item
                 }
@@ -248,7 +251,7 @@ bool PanelMenu::Draw()
         {
             ImGui::Columns(2, nullptr, false); 
             ImGui::SetColumnWidth(0, 100);    
-            // Botón Play
+            // Botï¿½n Play
             if (ImGui::Button("Play", ImVec2(90, 40))) {
                 isPlaying = true;
                 Engine::Instance().StartGame(); 
@@ -256,7 +259,7 @@ bool PanelMenu::Draw()
 
             ImGui::NextColumn(); 
 
-            // Botón Pause
+            // Botï¿½n Pause
             if (ImGui::Button("Pause", ImVec2(90, 40))) {
                 isPlaying = false;
                 Engine::Instance().PauseGame(); 
@@ -269,5 +272,5 @@ bool PanelMenu::Draw()
         ImGui::EndMainMenuBar();
     }
 
-	return true;
+    return true;
 }

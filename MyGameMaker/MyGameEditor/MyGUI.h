@@ -10,6 +10,7 @@ class PanelMenu;
 class PanelInspector;
 class PanelHierarchy;
 class PanelConfiguration;
+class PanelAssets;
 
 class MyGUI : public IEventProcessor
 {
@@ -17,11 +18,11 @@ class MyGUI : public IEventProcessor
 
 public:
 	static MyGUI& Instance() {
-		static MyGUI instance;  // La instancia única de la clase Engine
+		static MyGUI instance;  // La instancia Ãºnica de la clase Engine
 		return instance;
 	}
 
-	// Evita la copia y asignación del singleton
+	// Evita la copia y asignaciÃ³n del singleton
 	MyGUI(const MyGUI&) = delete;
 	MyGUI& operator=(const MyGUI&) = delete;
 	MyGUI(MyGUI&&) noexcept = delete;
@@ -36,6 +37,7 @@ public:
 	PanelInspector& inspector() const { return *_inspector; }
 	PanelHierarchy& hierarchy() const { return *_hierarchy; }
 	PanelConfiguration& configuration() const { return *_configuration; }
+	PanelAssets& assets() const { return *_assets; }
 
 	void CleanUp();
 
@@ -49,6 +51,7 @@ private:
 	PanelInspector* _inspector = nullptr;
 	PanelHierarchy* _hierarchy = nullptr;
 	PanelConfiguration* _configuration = nullptr;
+	PanelAssets* _assets = nullptr;
 	
 	void addPanel(Panel* panel);
 };
