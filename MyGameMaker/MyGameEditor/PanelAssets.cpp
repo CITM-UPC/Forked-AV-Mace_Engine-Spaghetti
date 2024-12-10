@@ -38,7 +38,9 @@ bool PanelAssets::Draw()
             flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick;
         }
 
-        bool nodeOpen = ImGui::TreeNodeEx(entry.name.c_str(), flags);
+        // Create a unique ID using the full path
+        std::string nodeId = entry.name + "##" + entry.path;
+        bool nodeOpen = ImGui::TreeNodeEx(nodeId.c_str(), flags, "%s", entry.name.c_str());
 
         // Handle clicking on items
         if (ImGui::IsItemClicked() && entry.isDirectory) {
