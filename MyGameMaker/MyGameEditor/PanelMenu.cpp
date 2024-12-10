@@ -2,7 +2,6 @@
 #include <imgui.h>
 
 #include "MyGUI.h"
-
 #include "MyGameEngine/Engine.h"
 #include "MyGameEngine/Scene.h"
 #include "MyGameEngine/GameObject.h"
@@ -12,6 +11,7 @@
 #include "PanelInspector.h"
 #include "PanelHierarchy.h"
 #include "PanelConfiguration.h"
+#include "PanelAssets.h"
 
 PanelMenu::PanelMenu(std::string name) : Panel(name, 0, 0)
 {

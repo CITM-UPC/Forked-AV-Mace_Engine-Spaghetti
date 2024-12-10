@@ -147,6 +147,7 @@
   <ItemGroup>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MyGUI.cpp" />
+    <ClCompile Include="PanelAssets.cpp" />
     <ClCompile Include="PanelConfiguration.cpp" />
     <ClCompile Include="PanelConsole.cpp" />
     <ClCompile Include="PanelHierarchy.cpp" />
@@ -161,6 +162,7 @@
   <ItemGroup>
     <ClInclude Include="MyGUI.h" />
     <ClInclude Include="Panel.h" />
+    <ClInclude Include="PanelAssets.h" />
     <ClInclude Include="PanelConfiguration.h" />
     <ClInclude Include="PanelConsole.h" />
     <ClInclude Include="PanelHierarchy.h" />
