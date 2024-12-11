@@ -2,9 +2,10 @@
 
 #include <imgui.h>
 
-#include "MyGameEngine/Engine.h"
-#include "MyGameEngine/MyWindow.h"
-#include "MyGameEngine/types.h"
+#include "../MyGameEngine/Engine.h"
+#include "../MyGameEngine/MyWindow.h"
+#include "../MyGameEngine/types.h"
+
 
 PanelConsole::PanelConsole(std::string name) : Panel(name, WINDOW_WIDTH, 200)
 {

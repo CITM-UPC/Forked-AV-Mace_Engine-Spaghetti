@@ -99,6 +99,18 @@
     <ClInclude Include="PolymorphList.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Resources\ResourceMesh.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Resources\ResourceTexture.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ResourceManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MyGameEditor\BottomPanel.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Camera.cpp">
@@ -156,6 +168,18 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="debugDraws.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Resources\ResourceMesh.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Resources\ResourceTexture.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ResourceManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\MyGameEditor\BottomPanel.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

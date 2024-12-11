@@ -12,6 +12,7 @@
 #include "PanelHierarchy.h"
 #include "PanelConfiguration.h"
 #include "PanelAssets.h"
+#include "BottomPanel.h"
 
 PanelMenu::PanelMenu(std::string name) : Panel(name, 0, 0)
 {

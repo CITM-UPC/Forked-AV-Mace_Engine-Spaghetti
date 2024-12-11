@@ -8,8 +8,8 @@ class Panel
 {
 public:
 
-	Panel(std::string name, int width, int height) : name(name), width(width), height(height) {}
-	virtual ~Panel() {}
+	Panel(std::string name, float width, float height) : name(name), width(width), height(height) {}
+	virtual ~Panel() = default;
 
 	virtual void Start() {}
 	virtual bool Draw() = 0;
@@ -19,19 +19,23 @@ public:
 
 	virtual std::string GetName() { return name; }
 
-	virtual bool GetState() { return enabled; }
+	virtual bool GetState() { return showWindow; }
 	virtual void SetState(bool state) { this->enabled = state; }
 	virtual void SwitchState() { 
 		enabled = !enabled; 
 		showWindow = enabled;
 	}
 
+	bool isActiveTab = false;
+
 protected:
 
 	std::string name;
 	bool enabled = false;
-	int width, height;
+	float width;
+	float height;
 	bool showWindow = true;
+	
 };
 
 #endif // !__PANEL_H__

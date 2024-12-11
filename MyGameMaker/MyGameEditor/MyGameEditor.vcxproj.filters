@@ -45,6 +45,9 @@
     <ClCompile Include="PanelAssets.cpp">
       <Filter>Source Files\UI</Filter>
     </ClCompile>
+    <ClCompile Include="BottomPanel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MyGUI.h">
@@ -70,6 +73,9 @@
     </ClInclude>
     <ClInclude Include="PanelAssets.h">
       <Filter>Header Files\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="BottomPanel.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
