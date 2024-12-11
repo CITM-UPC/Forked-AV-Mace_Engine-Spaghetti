@@ -150,6 +150,9 @@
     <ClInclude Include="PolymorphList.h" />
     <ClInclude Include="readOnlyView.h" />
     <ClInclude Include="Renderer.h" />
+    <ClInclude Include="ResourceImporter.h" />
+    <ClInclude Include="ResourceManager.h" />
+    <ClInclude Include="ResourceMesh.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="Texture.h" />
@@ -173,6 +176,9 @@
     <ClCompile Include="MyWindow.cpp" />
     <ClCompile Include="PerfTimer.cpp" />
     <ClCompile Include="Renderer.cpp" />
+    <ClCompile Include="ResourceImporter.cpp" />
+    <ClCompile Include="ResourceManager.cpp" />
+    <ClCompile Include="ResourceMesh.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="Texture.cpp" />

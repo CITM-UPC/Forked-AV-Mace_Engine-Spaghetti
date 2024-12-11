@@ -6,7 +6,6 @@
         "${workspaceFolder}/**",
         "C:/GitHub/Forked-AV-Mace_Engine-Spaghetti/vcpkg_installed/x64-windows/x64-windows/include"
       ],
-      "compilerPath": "gcc",
       "cStandard": "${default}",
       "cppStandard": "${default}",
       "intelliSenseMode": "windows-gcc-x64",
