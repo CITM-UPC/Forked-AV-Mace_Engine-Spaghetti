@@ -99,6 +99,23 @@ void Scene::Start()
 			cubo.max = glm::max(cubo.max, glm::dvec3(v));
 		}
 
+		// Convertir la caja delimitadora a AABB
+		glm::vec3 globalMin = glm::vec3(go->GetComponent<Transform>()->mat() * glm::vec4(cubo.min, 1.0f));
+		glm::vec3 globalMax = glm::vec3(go->GetComponent<Transform>()->mat() * glm::vec4(cubo.max, 1.0f));
+
+		cubo.min = glm::min(globalMin, globalMax);
+		cubo.max = glm::max(globalMin, globalMax);
+
+
+		// Rotar la AABB 90 grados a la derecha (alrededor del eje X)
+		glm::mat4 rotationMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(90.0f), glm::vec3(1, 0, 0));
+
+		glm::vec3 rotatedMin = glm::vec3(rotationMatrix * glm::vec4(cubo.min, 1.0f));
+		glm::vec3 rotatedMax = glm::vec3(rotationMatrix * glm::vec4(cubo.max, 1.0f));
+
+		cubo.min = glm::min(rotatedMin, rotatedMax);
+		cubo.max = glm::max(rotatedMin, rotatedMax);
+
 		go->boundingBox = cubo;
 	}
 }
@@ -297,6 +314,7 @@ void Scene::Draw(GameObject* root)
 
 		if (!child->children().empty()) Draw(child.get());
 	}
+	drawFrustum(*camera()->GetComponent<Camera>());
 
 	drawDebugInfoForGraphicObject(*root);
 }

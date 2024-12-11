@@ -31,7 +31,7 @@ void MyWindow::Start()
     LOG(LogType::LOG_INFO, "# Creating Window...");
 
     if (isOpen()) return;
-    _window = SDL_CreateWindow("AV-MACE ENGINE", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, _width, _height, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
+    _window = SDL_CreateWindow("SPAGHETTI-ENGINE", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, _width, _height, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
     if (!_window) throw exception(SDL_GetError());
 
     LOG(LogType::LOG_INFO, "# Creating OpenGL context...");
