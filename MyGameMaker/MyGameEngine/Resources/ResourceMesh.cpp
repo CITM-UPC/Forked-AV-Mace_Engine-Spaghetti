@@ -55,6 +55,11 @@ bool ResourceMesh::SaveToLibrary()
             }
         }
 
+        // Make sure the library path has the correct extension
+        if (libraryFile.find(".mymesh") == std::string::npos) {
+            libraryFile += ".mymesh";
+        }
+
         // Save to custom format
         std::ofstream file(libraryFile, std::ios::binary);
         if (!file.is_open()) {
@@ -62,16 +67,20 @@ bool ResourceMesh::SaveToLibrary()
             return false;
         }
 
-        // Write header
+        // Write mesh info header
         uint32_t vertexCount = vertices.size();
         uint32_t indexCount = indices.size();
+        uint32_t vertexStride = (mesh->HasNormals() ? 6 : 3) + (mesh->HasTextureCoords(0) ? 2 : 0);
+        
         file.write(reinterpret_cast<const char*>(&vertexCount), sizeof(vertexCount));
         file.write(reinterpret_cast<const char*>(&indexCount), sizeof(indexCount));
+        file.write(reinterpret_cast<const char*>(&vertexStride), sizeof(vertexStride));
 
-        // Write data
+        // Write mesh data
         file.write(reinterpret_cast<const char*>(vertices.data()), vertices.size() * sizeof(float));
         file.write(reinterpret_cast<const char*>(indices.data()), indices.size() * sizeof(unsigned int));
 
+        file.close();
         LOG(LogType::LOG_INFO, ("Mesh processed and saved to library: " + libraryFile).c_str());
         return true;
     }
@@ -81,23 +90,38 @@ bool ResourceMesh::SaveToLibrary()
 
 bool ResourceMesh::LoadToMemory() 
 {
+    // Make sure we're looking for the right extension
+    if (libraryFile.find(".mymesh") == std::string::npos) {
+        libraryFile += ".mymesh";
+    }
+
     std::ifstream file(libraryFile, std::ios::binary);
     if (!file.is_open()) {
         LOG(LogType::LOG_WARNING, ("Failed to open library file: " + libraryFile).c_str());
         return false;
     }
 
-    // Read header
-    uint32_t vertexCount, indexCount;
-    file.read(reinterpret_cast<char*>(&vertexCount), sizeof(vertexCount));
-    file.read(reinterpret_cast<char*>(&indexCount), sizeof(indexCount));
+    try {
+        // Read mesh info header
+        uint32_t vertexCount, indexCount, vertexStride;
+        file.read(reinterpret_cast<char*>(&vertexCount), sizeof(vertexCount));
+        file.read(reinterpret_cast<char*>(&indexCount), sizeof(indexCount));
+        file.read(reinterpret_cast<char*>(&vertexStride), sizeof(vertexStride));
 
-    // Read data
-    vertices.resize(vertexCount);
-    indices.resize(indexCount);
-    file.read(reinterpret_cast<char*>(vertices.data()), vertexCount * sizeof(float));
-    file.read(reinterpret_cast<char*>(indices.data()), indexCount * sizeof(unsigned int));
+        // Read mesh data
+        vertices.resize(vertexCount);
+        indices.resize(indexCount);
 
-    loaded = true;
-    return true;
+        file.read(reinterpret_cast<char*>(vertices.data()), vertexCount * sizeof(float));
+        file.read(reinterpret_cast<char*>(indices.data()), indexCount * sizeof(unsigned int));
+
+        file.close();
+        loaded = true;
+        LOG(LogType::LOG_INFO, ("Mesh loaded from library: " + libraryFile).c_str());
+        return true;
+    }
+    catch (const std::exception& e) {
+        LOG(LogType::LOG_WARNING, ("Error loading mesh: " + std::string(e.what())).c_str());
+        return false;
+    }
 } 
