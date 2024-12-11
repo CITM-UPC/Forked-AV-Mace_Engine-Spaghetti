@@ -34,7 +34,7 @@ public:
 	virtual bool SetActive(bool active) { return this->_active = active; }
 	virtual bool SwitchState() { return _active = !_active; }
 
-	
+
 
 	template <typename T>
 	std::shared_ptr<GameObject> FindChildWithComponent() const {

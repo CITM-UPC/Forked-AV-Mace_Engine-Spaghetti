@@ -35,4 +35,3 @@ bool GameObject::operator==(const GameObject& other) const
 
 	return true;
 }
-

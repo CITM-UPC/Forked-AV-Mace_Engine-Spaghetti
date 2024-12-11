@@ -8,6 +8,7 @@
 #include "Scene.h"
 #include "types.h"
 
+
 #define MAX_KEYS 300
 
 Input::Input()
@@ -186,14 +187,4 @@ void Input::GetMouseMotion(int& x, int& y)
 {
 	x = mouseMotionX;
 	y = mouseMotionY;
-}
-
-void Input::ResetMouseButtonState()
-{
-	for (int i = 0; i < NUM_MOUSE_BUTTONS; ++i)
-	{
-
-		if (mouseButtons[i] == KEY_UP)
-			mouseButtons[i] = KEY_IDLE;
-	}
 }

@@ -51,6 +51,9 @@ public:
 	void CreateCone();
 	void CreateTorus();
 
+	bool intersectRayWithBoundingBox();
+	void raycastFromMouseToGameObject();
+
 };
 
 #endif // !__SCENE_H__

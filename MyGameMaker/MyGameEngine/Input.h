@@ -6,6 +6,7 @@
 //#define LAST_KEYS_PRESSED_BUFFER 50
 
 #include <SDL2/SDL_events.h>
+#include "types.h"
 
 class IEventProcessor {
 public:
@@ -70,8 +71,6 @@ public:
 	void GetMousePosition(int &x, int &y);
 	void GetMouseMotion(int& x, int& y);
 
-	void ResetMouseButtonState();
-
 	void SetEventProcessor(IEventProcessor* processor) {
 		event_processor = processor;
 	}
@@ -91,6 +90,8 @@ public:
 			SDL_StopTextInput();
 	}
 
+
+
 private:
 	bool windowEvents[WE_COUNT];
 	KeyState*	keyboard;
@@ -103,5 +104,7 @@ private:
 	bool mouseWheelScrolling;
 	IEventProcessor* event_processor = nullptr;
 };
+
+
 
 #endif // __INPUT_H__

@@ -8,6 +8,7 @@
 #include <memory>
 #include <GL/glut.h>
 #include <iostream>
+#include "Camera.cpp"
 
 #include "Engine.h"
 #include "Log.h"
@@ -16,6 +17,7 @@
 #include "Mesh.h"
 #include "Material.h"
 #include "debugDraws.h"
+
 
 //camera movement variables
 bool rightMouse = false;
@@ -476,4 +478,94 @@ void Scene::CreateTorus()
 
 	if (selectedGameObject == nullptr) root()->addChild(go);
 	else selectedGameObject->addChild(go);
+}
+
+bool intersectRayWithBoundingBox(const glm::vec3& rayOrigin, const glm::vec3& rayDirection, const BoundingBox& bbox) {
+	float tmin, tmax, tymin, tymax, tzmin, tzmax;
+
+	// Evitar divisiones por 0 con direcciones cercanas a cero.
+	if (rayDirection.x != 0.0f) {
+		tmin = (bbox.min.x - rayOrigin.x) / rayDirection.x;
+		tmax = (bbox.max.x - rayOrigin.x) / rayDirection.x;
+		if (tmin > tmax) std::swap(tmin, tmax);
+	}
+	else {
+		tmin = -std::numeric_limits<float>::infinity();
+		tmax = std::numeric_limits<float>::infinity();
+	}
+
+	if (rayDirection.y != 0.0f) {
+		tymin = (bbox.min.y - rayOrigin.y) / rayDirection.y;
+		tymax = (bbox.max.y - rayOrigin.y) / rayDirection.y;
+		if (tymin > tymax) std::swap(tymin, tymax);
+	}
+	else {
+		tymin = -std::numeric_limits<float>::infinity();
+		tymax = std::numeric_limits<float>::infinity();
+	}
+
+	// Comparar intervalos X e Y
+	if ((tmin > tymax) || (tymin > tmax)) {
+		return false;
+	}
+
+	tmin = std::max(tmin, tymin);
+	tmax = std::min(tmax, tymax);
+
+	if (rayDirection.z != 0.0f) {
+		tzmin = (bbox.min.z - rayOrigin.z) / rayDirection.z;
+		tzmax = (bbox.max.z - rayOrigin.z) / rayDirection.z;
+		if (tzmin > tzmax) std::swap(tzmin, tzmax);
+	}
+	else {
+		tzmin = -std::numeric_limits<float>::infinity();
+		tzmax = std::numeric_limits<float>::infinity();
+	}
+
+	// Comparar intervalos X, Y y Z
+	if ((tmin > tzmax) || (tzmin > tmax)) {
+		return false;
+	}
+
+	tmin = std::max(tmin, tzmin);
+	tmax = std::min(tmax, tzmax);
+
+	// Si tmin >= 0, el rayo intersecta en el rango válido.
+	return tmin >= 0.0f;
+}
+
+
+GameObject* raycastFromMouseToGameObject(int mouseX, int mouseY,
+	const glm::mat4& projection,
+	const glm::mat4& view,
+	const glm::ivec2& viewportSize,
+	const std::vector<GameObject*>& gameObjects) {
+	// Obtener el origen y dirección del rayo desde las coordenadas del mouse
+	auto [rayOrigin, rayDirection] = GetRayFromMouse(mouseX, mouseY, projection, view, viewportSize);
+
+	GameObject* closestObject = nullptr;
+	float closestDistance = std::numeric_limits<float>::max();
+
+	// Iterar sobre los objetos en la escena
+	for (GameObject* go : gameObjects) {
+		if (!go) continue;
+
+		// Obtener la caja delimitadora del objeto
+		BoundingBox bbox = go->boundingBox;
+
+		// Comprobar si el rayo intersecta con la caja
+		if (intersectRayWithBoundingBox(rayOrigin, rayDirection, bbox)) {
+			// Calcular la distancia del objeto al origen del rayo
+			glm::vec3 objectPosition = go->GetComponent<Transform>()->pos(); // Método que debes tener
+			float distance = glm::length(objectPosition - rayOrigin);
+
+			// Guardar el objeto más cercano
+			if (distance < closestDistance) {
+				closestDistance = distance;
+				closestObject = go;
+			}
+		}
+	}
+
+	return closestObject; // Devuelve el objeto más cercano, o nullptr si no se encontró ninguno
 }
