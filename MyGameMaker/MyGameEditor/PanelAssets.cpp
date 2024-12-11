@@ -25,13 +25,10 @@ PanelAssets::PanelAssets(std::string name) : Panel(name, WINDOW_WIDTH, 200)
 
 bool PanelAssets::Draw()
 {
-    ImGui::SetNextWindowSize(ImVec2(width, Engine::Instance().window->height() - 200));
-    ImGui::SetNextWindowPos(ImVec2(0, Engine::Instance().window->height() - height));
-
-    ImGui::Begin("Assets", &showWindow, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize);
-    DrawContents();
-    ImGui::End();
-
+    // Don't create a new window, just draw contents if this tab is active
+    if (isActiveTab) {
+        DrawContents();
+    }
     return true;
 }
 
@@ -138,42 +135,60 @@ void PanelAssets::DrawContents()
 void PanelAssets::SyncLibraryWithAssets()
 {
     static std::unordered_map<std::string, std::filesystem::file_time_type> lastModifiedTimes;
+    static bool firstRun = true;
     
     // Create Library if it doesn't exist
     if (!fs::exists("Library")) {
         fs::create_directory("Library");
     }
 
-    // Process all files in Assets
-    for (const auto& entry : fs::recursive_directory_iterator("Assets")) {
-        if (!entry.is_regular_file() || entry.path().extension() == ".meta") {
-            continue;
-        }
-
-        std::string path = entry.path().string();
-        auto lastWriteTime = fs::last_write_time(entry.path());
-
-        // Check if file has been modified since last sync
-        if (lastModifiedTimes.find(path) != lastModifiedTimes.end() && 
-            lastModifiedTimes[path] == lastWriteTime) {
-            continue;  // Skip if file hasn't changed
-        }
-
-        // Import through ResourceManager
-        auto resource = ResourceManager::Instance().ImportFile(path);
-        if (resource) {
-            lastModifiedTimes[path] = lastWriteTime;
-            LOG(LogType::LOG_INFO, ("Reimported: " + path).c_str());
-        }
+    // On first run, clear and rebuild Library
+    if (firstRun) {
+        fs::remove_all("Library");
+        fs::create_directory("Library");
+        firstRun = false;
     }
 
-    // Clean up tracking of deleted files
-    for (auto it = lastModifiedTimes.begin(); it != lastModifiedTimes.end();) {
-        if (!fs::exists(it->first)) {
-            it = lastModifiedTimes.erase(it);
-        } else {
-            ++it;
+    // Process all files in Assets
+    try {
+        for (const auto& entry : fs::recursive_directory_iterator("Assets")) {
+            if (!entry.is_regular_file() || entry.path().extension() == ".meta") {
+                continue;
+            }
+
+            std::string path = entry.path().string();
+            auto lastWriteTime = fs::last_write_time(entry.path());
+
+            // Check if file needs processing
+            auto it = lastModifiedTimes.find(path);
+            if (it != lastModifiedTimes.end() && it->second == lastWriteTime) {
+                continue;  // File hasn't changed
+            }
+
+            // Check if corresponding library file exists
+            std::string uuid;
+            std::string metaPath = path + ".meta";
+            if (fs::exists(metaPath)) {
+                uuid = GetUUIDFromMetaFile(metaPath);
+                if (!uuid.empty()) {
+                    std::string libPath = "Library/" + uuid;
+                    if (fs::exists(libPath + ".mymesh") || fs::exists(libPath + ".mytex")) {
+                        lastModifiedTimes[path] = lastWriteTime;
+                        continue;  // Library file exists and is up to date
+                    }
+                }
+            }
+
+            // Import file if needed
+            auto resource = ResourceManager::Instance().ImportFile(path);
+            if (resource) {
+                lastModifiedTimes[path] = lastWriteTime;
+                LOG(LogType::LOG_INFO, ("Processed: " + path).c_str());
+            }
         }
+    }
+    catch (const fs::filesystem_error& e) {
+        LOG(LogType::LOG_WARNING, ("Filesystem error: " + std::string(e.what())).c_str());
     }
 }
 

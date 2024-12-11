@@ -1,9 +1,11 @@
 #pragma once
 
 #include <list>
+#include <vector>
 
-#include "MyGameEngine/input.h"
+#include "../MyGameEngine/input.h"
 #include "Panel.h"
+#include "BottomPanel.h"
 
 class PanelConsole;
 class PanelMenu;
@@ -33,11 +35,12 @@ public:
 
 	void processEvent(const SDL_Event& event) override;
 
-	PanelConsole& console() const { return *_console; }
 	PanelInspector& inspector() const { return *_inspector; }
 	PanelHierarchy& hierarchy() const { return *_hierarchy; }
 	PanelConfiguration& configuration() const { return *_configuration; }
-	PanelAssets& assets() const { return *_assets; }
+
+	PanelConsole& console() const { return *_bottomPanel->getConsole(); }
+	PanelAssets& assets() const { return *_bottomPanel->getAssets(); }
 
 	void CleanUp();
 
@@ -46,12 +49,11 @@ private:
 	~MyGUI();
 
 	//List of panels
-	PanelConsole* _console = nullptr;
 	PanelMenu* _menu = nullptr;
+	BottomPanel* _bottomPanel = nullptr;
 	PanelInspector* _inspector = nullptr;
 	PanelHierarchy* _hierarchy = nullptr;
 	PanelConfiguration* _configuration = nullptr;
-	PanelAssets* _assets = nullptr;
 	
 	void addPanel(Panel* panel);
 };

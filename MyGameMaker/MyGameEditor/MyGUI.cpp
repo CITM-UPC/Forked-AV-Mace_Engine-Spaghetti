@@ -11,6 +11,7 @@
 #include "PanelHierarchy.h"
 #include "PanelConfiguration.h"
 #include "PanelAssets.h"
+#include "BottomPanel.h"
 
 MyGUI::~MyGUI() {
 	
@@ -27,19 +28,17 @@ void MyGUI::Awake(SDL_Window* window, void* context)
 	ImGui_ImplSDL2_InitForOpenGL(window, context);
 	ImGui_ImplOpenGL3_Init();
 
-	_console = new PanelConsole("Console");
 	_menu = new PanelMenu("Menu");
+	_bottomPanel = new BottomPanel("BottomPanel");
 	_inspector = new PanelInspector("Inspector");
 	_hierarchy = new PanelHierarchy("Hierarchy");
 	_configuration = new PanelConfiguration("Configuration");
-	_assets = new PanelAssets("Assets");
 
-	addPanel(_console);
 	addPanel(_menu);
+	addPanel(_bottomPanel);
 	addPanel(_inspector);
 	addPanel(_hierarchy);
 	addPanel(_configuration);
-	addPanel(_assets);
 }
 
 void MyGUI::render() {

@@ -153,6 +153,7 @@
     <ClCompile Include="PanelHierarchy.cpp" />
     <ClCompile Include="PanelInspector.cpp" />
     <ClCompile Include="PanelMenu.cpp" />
+    <ClCompile Include="BottomPanel.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MyGameEngine\MyGameEngine.vcxproj">
@@ -168,6 +169,7 @@
     <ClInclude Include="PanelHierarchy.h" />
     <ClInclude Include="PanelInspector.h" />
     <ClInclude Include="PanelMenu.h" />
+    <ClInclude Include="BottomPanel.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Shaders\Basic.shader" />
