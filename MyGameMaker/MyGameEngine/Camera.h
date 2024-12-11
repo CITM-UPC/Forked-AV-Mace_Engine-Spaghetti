@@ -10,8 +10,10 @@ class Camera : public Component
 	double zNear = 0.1;
 	double zFar = 128.0;
 	float _speed = 10.0f;
+	Transform _transform;
 
 public:
+
 	Camera(bool active, GameObject* owner) : Component(active, owner) {}
 	~Camera() {}
 
@@ -26,11 +28,13 @@ public:
 	double& far() { return zFar; }
 	float& speed() { return _speed; };
 
+    std::list<Plane> frustumPlanes() const;
+
 	glm::dmat4 projection() const;
 	glm::dmat4 view() const;
 
-	std::list<Plane> frustumPlanes() const;
-
+	
+	bool isAABBInFrustum(const glm::dvec3& min, const glm::dvec3& max) const;
 
 };
 

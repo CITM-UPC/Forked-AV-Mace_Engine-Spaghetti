@@ -1,5 +1,7 @@
 #include "Camera.h"
 #include <glm/gtc/matrix_transform.hpp>
+#define GLM_ENABLE_EXPERIMENTAL 1
+#include <glm/gtx/rotate_vector.hpp>
 
 glm::dmat4 Camera::projection() const {
 	return glm::perspective(_fov, _aspect, zNear, zFar);
@@ -10,57 +12,31 @@ glm::dmat4 Camera::view() const {
 }
 
 std::list<Plane> Camera::frustumPlanes() const {
-
-    // Get the combined projection-view matrix
-    glm::dmat4 projectionMatrix = projection();
-    glm::dmat4 viewMatrix = view();
-    glm::dmat4 pvMatrix = projectionMatrix * viewMatrix;
-
-    std::list<Plane> planes;
-
-    // Extract planes from the projection-view matrix
-    // Left Plane
-    planes.emplace_back(
-        Vector(glm::normalize(glm::dvec3(pvMatrix[0][3] + pvMatrix[0][0],
-            pvMatrix[1][3] + pvMatrix[1][0],
-            pvMatrix[2][3] + pvMatrix[2][0]))),
-        Point(glm::dvec3(0))); // Point is less critical, often just a placeholder
-
-    // Right Plane
-    planes.emplace_back(
-        Vector(glm::normalize(glm::dvec3(pvMatrix[0][3] - pvMatrix[0][0],
-            pvMatrix[1][3] - pvMatrix[1][0],
-            pvMatrix[2][3] - pvMatrix[2][0]))),
-        Point(glm::dvec3(0)));
-
-    // Bottom Plane
-    planes.emplace_back(
-        Vector(glm::normalize(glm::dvec3(pvMatrix[0][3] + pvMatrix[0][1],
-            pvMatrix[1][3] + pvMatrix[1][1],
-            pvMatrix[2][3] + pvMatrix[2][1]))),
-        Point(glm::dvec3(0)));
-
-    // Top Plane
-    planes.emplace_back(
-        Vector(glm::normalize(glm::dvec3(pvMatrix[0][3] - pvMatrix[0][1],
-            pvMatrix[1][3] - pvMatrix[1][1],
-            pvMatrix[2][3] - pvMatrix[2][1]))),
-        Point(glm::dvec3(0)));
-
-    // Near Plane
-    planes.emplace_back(
-        Vector(glm::normalize(glm::dvec3(pvMatrix[0][3] + pvMatrix[0][2],
-            pvMatrix[1][3] + pvMatrix[1][2],
-            pvMatrix[2][3] + pvMatrix[2][2]))),
-        Point(glm::dvec3(0)));
-
-    // Far Plane
-    planes.emplace_back(
-        Vector(glm::normalize(glm::dvec3(pvMatrix[0][3] - pvMatrix[0][2],
-            pvMatrix[1][3] - pvMatrix[1][2],
-            pvMatrix[2][3] - pvMatrix[2][2]))),
-        Point(glm::dvec3(0)));
-
-    return planes;
+	const double h_fov = glm::radians(_fov);
+	const double v_fov = glm::radians(_fov / _aspect);
+	return {
+		//near
+		Plane(_transform.fwd(), _transform.pos() + _transform.fwd() * zNear),
+		//far
+		Plane(-_transform.fwd(), _transform.pos() + _transform.fwd() * zFar),
+		//left
+		Plane(glm::rotate(_transform.left(), h_fov, _transform.up()), _transform.pos()),
+		//right
+		Plane(glm::rotate(_transform.left(), -h_fov, _transform.up()), _transform.pos()),
+		//top
+		Plane(glm::rotate(_transform.up(), -v_fov, _transform.left()), _transform.pos()),
+		//bottom
+		Plane(glm::rotate(_transform.up(), v_fov, _transform.left()), _transform.pos())
+	};
 }
+
+//bool Camera::isAABBInFrustum(const glm::dvec3& min, const glm::dvec3& max) const {
+//	auto planes = frustumPlanes();
+//	for (const auto& plane : planes) {
+//		if (plane.distance(min) > 0 && plane.distance(max) > 0) {
+//			return false;
+//		}
+//	}
+//	return true;
+//}
 
