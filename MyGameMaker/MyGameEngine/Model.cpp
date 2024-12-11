@@ -4,7 +4,7 @@
 #include <iostream>
 
 void Model::SaveModelData(const std::string& filepath) {
-   std::filesystem::path folderPath = std::filesystem::current_path() / "SaveFiles";
+   std::filesystem::path folderPath = std::filesystem::current_path() / "Library";
 
     // Verificar si la carpeta existe y crearla si no
     if (!std::filesystem::exists(folderPath)) {

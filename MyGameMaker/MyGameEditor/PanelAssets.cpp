@@ -3,6 +3,7 @@
 #include <filesystem>
 #include "MyGameEngine/Engine.h"
 #include "MyGameEngine/Log.h"
+#include "MyGameEngine/ResourceManager.h"
 
 namespace fs = std::filesystem;
 
@@ -120,27 +121,31 @@ void PanelAssets::RefreshAssetList()
 
 void PanelAssets::HandleDragAndDrop()
 {
-    if (ImGui::BeginDragDropTarget()) {
-        if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("EXTERNAL_FILE")) {
-            char* path = (char*)payload->Data;
-            try {
-                fs::path sourcePath(path);
-                fs::path destPath = currentPath / sourcePath.filename();
-                
-                if (fs::exists(destPath)) {
-                    LOG(LogType::LOG_WARNING, ("File already exists: " + destPath.string()).c_str());
-                }
-                else {
-                    fs::copy(sourcePath, destPath, fs::copy_options::recursive);
-                    LOG(LogType::LOG_INFO, ("Imported file: " + destPath.string()).c_str());
-                    RefreshAssetList();
-                }
+    if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("EXTERNAL_FILE")) {
+        char* path = (char*)payload->Data;
+        try {
+            fs::path sourcePath(path);
+            fs::path destPath = currentPath / sourcePath.filename();
+            
+            if (fs::exists(destPath)) {
+                LOG(LogType::LOG_WARNING, ("File already exists: " + destPath.string()).c_str());
             }
-            catch (const std::exception& e) {
-                LOG(LogType::LOG_WARNING, ("Failed to import file: " + std::string(e.what())).c_str());
+            else {
+                // Copy to Assets folder
+                fs::copy(sourcePath, destPath, fs::copy_options::recursive);
+                
+                // Import through ResourceManager
+                auto resource = ResourceManager::Instance().ImportFile(destPath.string());
+                if (resource) {
+                    LOG(LogType::LOG_INFO, ("Imported and processed: " + destPath.string()).c_str());
+                }
+                
+                RefreshAssetList();
             }
         }
-        ImGui::EndDragDropTarget();
+        catch (const std::exception& e) {
+            LOG(LogType::LOG_WARNING, ("Failed to import file: " + std::string(e.what())).c_str());
+        }
     }
 }
 
