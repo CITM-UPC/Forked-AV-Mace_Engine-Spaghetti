@@ -99,13 +99,13 @@
     <ClInclude Include="PolymorphList.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ResourceImporter.h">
+    <ClInclude Include="Resources\ResourceMesh.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Resources\ResourceTexture.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ResourceManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ResourceMesh.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -167,13 +167,13 @@
     <ClCompile Include="debugDraws.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Resources\ResourceMesh.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Resources\ResourceTexture.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="ResourceManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ResourceMesh.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ResourceImporter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

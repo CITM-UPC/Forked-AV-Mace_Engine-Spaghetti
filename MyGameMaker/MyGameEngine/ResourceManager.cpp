@@ -1,5 +1,6 @@
 #include "ResourceManager.h"
-#include "ResourceMesh.h"
+#include "Resources/ResourceMesh.h"
+#include "Resources/ResourceTexture.h"
 #include <filesystem>
 #include <fstream>
 #include <random>
@@ -22,7 +23,9 @@ std::shared_ptr<Resource> ResourceManager::ImportFile(const std::string& assetPa
         case Resource::Type::MESH:
             resource = std::make_shared<ResourceMesh>(uuid);
             break;
-        // Add cases for other resource types
+        case Resource::Type::TEXTURE:
+            resource = std::make_shared<ResourceTexture>(uuid);
+            break;
         default:
             LOG(LogType::LOG_WARNING, "Unsupported file type for import");
             return nullptr;
@@ -31,6 +34,10 @@ std::shared_ptr<Resource> ResourceManager::ImportFile(const std::string& assetPa
     // Set file paths
     resource->originalFile = assetPath;
     resource->libraryFile = "Library/" + uuid;
+    
+    // Add extension based on type
+    if (type == Resource::Type::MESH) resource->libraryFile += ".mymesh";
+    else if (type == Resource::Type::TEXTURE) resource->libraryFile += ".mytex";
     
     // Generate meta file
     GenerateMetaFile(assetPath, uuid);
@@ -70,6 +77,9 @@ void ResourceManager::GenerateMetaFile(const std::string& assetPath, const std::
         metaFile << "uuid: " << uuid << "\n";
         metaFile << "type: " << static_cast<int>(GetResourceTypeFromExtension(assetPath)) << "\n";
         metaFile.close();
+        LOG(LogType::LOG_INFO, ("Meta file created: " + metaPath).c_str());
+    } else {
+        LOG(LogType::LOG_WARNING, ("Failed to create meta file: " + metaPath).c_str());
     }
 }
 

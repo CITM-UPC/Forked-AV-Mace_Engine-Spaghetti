@@ -1,6 +1,6 @@
 #include "ResourceMesh.h"
 #include <fstream>
-#include "Log.h"
+#include "../Log.h"
 
 bool ResourceMesh::LoadToMemory() 
 {

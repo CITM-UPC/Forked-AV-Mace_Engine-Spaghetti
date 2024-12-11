@@ -1,5 +1,5 @@
 #pragma once
-#include "ResourceManager.h"
+#include "../ResourceManager.h"
 
 class ResourceMesh : public Resource {
 public:
