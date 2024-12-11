@@ -1,14 +1,12 @@
 #include "PanelAssets.h"
 #include <imgui.h>
 #include <filesystem>
-#include "MyGameEngine/MyWindow.h"
-#include <algorithm>
 #include "MyGameEngine/Engine.h"
 #include "MyGameEngine/Log.h"
 
 namespace fs = std::filesystem;
 
-PanelAssets::PanelAssets(std::string name) : Panel(name, WINDOW_WIDTH * 0.25, WINDOW_HEIGHT - 200)
+PanelAssets::PanelAssets(std::string name) : Panel(name, WINDOW_WIDTH, 200)
 {
     SwitchState();
     RefreshAssetList();
@@ -18,11 +16,12 @@ PanelAssets::~PanelAssets() {}
 
 bool PanelAssets::Draw()
 {
-    ImGui::SetNextWindowSize(ImVec2(width, Engine::Instance().window->height() - 200));
-    ImGui::SetNextWindowPos(ImVec2(Engine::Instance().window->width() - width * 2, 0));
+    // This is now just a stub since we're drawing in the Console panel
+    return true;
+}
 
-    ImGui::Begin("Assets", &showWindow, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize);
-    
+void PanelAssets::DrawContents()
+{
     // Current path display
     ImGui::Text("Current Path: %s", currentPath.c_str());
     ImGui::Separator();
@@ -30,7 +29,9 @@ bool PanelAssets::Draw()
     // Handle file/folder drops into the window
     HandleDragAndDrop();
 
-    // Draw directory contents
+    // Draw directory contents in a child window to enable proper scrolling
+    ImGui::BeginChild("AssetsView", ImVec2(0, 0), false);
+    
     for (const auto& entry : currentAssets)
     {
         ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen;
@@ -38,7 +39,6 @@ bool PanelAssets::Draw()
             flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick;
         }
 
-        // Create a unique ID using the full path
         std::string nodeId = entry.name + "##" + entry.path;
         bool nodeOpen = ImGui::TreeNodeEx(nodeId.c_str(), flags, "%s", entry.name.c_str());
 
@@ -66,6 +66,8 @@ bool PanelAssets::Draw()
         }
     }
 
+    ImGui::EndChild();
+
     // Delete confirmation modal
     if (showDeleteConfirmation) {
         ImGui::OpenPopup("Delete Asset?");
@@ -87,14 +89,6 @@ bool PanelAssets::Draw()
         }
         ImGui::EndPopup();
     }
-
-    ImGui::End();
-
-    if (!showWindow) {
-        SwitchState();
-    }
-
-    return true;
 }
 
 void PanelAssets::RefreshAssetList()

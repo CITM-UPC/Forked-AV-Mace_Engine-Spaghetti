@@ -20,6 +20,7 @@ public:
     ~PanelAssets();
 
     bool Draw() override;
+    void DrawContents();
 
 private:
     void RefreshAssetList();
