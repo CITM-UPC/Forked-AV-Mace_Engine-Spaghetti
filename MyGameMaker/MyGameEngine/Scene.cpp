@@ -315,6 +315,7 @@ void Scene::Draw(GameObject* root)
 		if (!child->children().empty()) Draw(child.get());
 	}
 	drawFrustum(*camera()->GetComponent<Camera>());
+	printFrustumOnScreen(*camera()->GetComponent<Camera>());
 
 	drawDebugInfoForGraphicObject(*root);
 }

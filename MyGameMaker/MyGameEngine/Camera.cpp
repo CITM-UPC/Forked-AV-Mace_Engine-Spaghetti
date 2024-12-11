@@ -30,13 +30,13 @@ std::list<Plane> Camera::frustumPlanes() const {
 	};
 }
 
-//bool Camera::isAABBInFrustum(const glm::dvec3& min, const glm::dvec3& max) const {
-//	auto planes = frustumPlanes();
-//	for (const auto& plane : planes) {
-//		if (plane.distance(min) > 0 && plane.distance(max) > 0) {
-//			return false;
-//		}
-//	}
-//	return true;
-//}
+bool Camera::isAABBInFrustum(const glm::dvec3& min, const glm::dvec3& max) const {
+	auto planes = frustumPlanes();
+	for (const auto& plane : planes) {
+		if (plane.distance(min) > 0 && plane.distance(max) > 0) {
+			return false;
+		}
+	}
+	return true;
+}
 

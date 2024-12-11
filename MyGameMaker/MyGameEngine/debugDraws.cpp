@@ -148,3 +148,23 @@ void drawDebugInfoForCamera(const Camera& camera) {
 
 	glPopMatrix();
 }
+
+// New function to print the frustum on screen
+void printFrustumOnScreen(const Camera& camera) {
+	glMatrixMode(GL_PROJECTION);
+	glPushMatrix();
+	glLoadIdentity();
+	gluOrtho2D(0, 800, 0, 600); // Adjust the orthographic projection as needed
+
+	glMatrixMode(GL_MODELVIEW);
+	glPushMatrix();
+	glLoadIdentity();
+
+	// Draw the frustum
+	drawFrustum(camera);
+
+	glPopMatrix();
+	glMatrixMode(GL_PROJECTION);
+	glPopMatrix();
+	glMatrixMode(GL_MODELVIEW);
+}

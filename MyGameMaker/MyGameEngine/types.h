@@ -51,6 +51,7 @@ inline Vector operator*(const mat4& m, const Vector& v) { return Vector(vec3(m *
 struct Plane {
 	Vector normal;
 	Point point;
+	double distance(const Point& p) const { return glm::dot(normal.v, p.p - point.p); }
 	Plane(const Vector& normal, const Point& point) : normal(normal), point(point) {}
 };
 
