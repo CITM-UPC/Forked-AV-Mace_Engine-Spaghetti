@@ -37,15 +37,35 @@ bool PanelAssets::Draw()
 
 void PanelAssets::DrawContents()
 {
+    static float lastRefreshTime = 0.0f;
+    const float REFRESH_COOLDOWN = 0.5f; // Half second cooldown
+
     // Current path display
     ImGui::Text("Current Path: %s", currentPath.c_str());
     ImGui::SameLine();
     
-    // Add refresh button
-    if (ImGui::Button("Refresh")) {
+    // Add refresh button with cooldown
+    float currentTime = ImGui::GetTime();
+    bool refreshEnabled = (currentTime - lastRefreshTime) >= REFRESH_COOLDOWN;
+    
+    if (!refreshEnabled) {
+        ImGui::PushStyleVar(ImGuiStyleVar_Alpha, 0.5f);
+    }
+    
+    if (ImGui::Button("Refresh") && refreshEnabled) {
         SyncLibraryWithAssets();
         RefreshAssetList();
+        lastRefreshTime = currentTime;
     }
+    
+    if (!refreshEnabled) {
+        ImGui::PopStyleVar();
+        if (ImGui::IsItemHovered()) {
+            ImGui::SetTooltip("Please wait %.1f seconds before refreshing again", 
+                REFRESH_COOLDOWN - (currentTime - lastRefreshTime));
+        }
+    }
+    
     ImGui::Separator();
 
     // Handle file/folder drops into the window
@@ -117,20 +137,42 @@ void PanelAssets::DrawContents()
 
 void PanelAssets::SyncLibraryWithAssets()
 {
-    // Clear Library folder
-    if (fs::exists("Library")) {
-        fs::remove_all("Library");
+    static std::unordered_map<std::string, std::filesystem::file_time_type> lastModifiedTimes;
+    
+    // Create Library if it doesn't exist
+    if (!fs::exists("Library")) {
+        fs::create_directory("Library");
     }
-    fs::create_directory("Library");
 
-    // Recursively process all files in Assets
+    // Process all files in Assets
     for (const auto& entry : fs::recursive_directory_iterator("Assets")) {
-        if (entry.is_regular_file() && entry.path().extension() != ".meta") {
-            // Import file through ResourceManager
-            auto resource = ResourceManager::Instance().ImportFile(entry.path().string());
-            if (resource) {
-                LOG(LogType::LOG_INFO, ("Reimported: " + entry.path().string()).c_str());
-            }
+        if (!entry.is_regular_file() || entry.path().extension() == ".meta") {
+            continue;
+        }
+
+        std::string path = entry.path().string();
+        auto lastWriteTime = fs::last_write_time(entry.path());
+
+        // Check if file has been modified since last sync
+        if (lastModifiedTimes.find(path) != lastModifiedTimes.end() && 
+            lastModifiedTimes[path] == lastWriteTime) {
+            continue;  // Skip if file hasn't changed
+        }
+
+        // Import through ResourceManager
+        auto resource = ResourceManager::Instance().ImportFile(path);
+        if (resource) {
+            lastModifiedTimes[path] = lastWriteTime;
+            LOG(LogType::LOG_INFO, ("Reimported: " + path).c_str());
+        }
+    }
+
+    // Clean up tracking of deleted files
+    for (auto it = lastModifiedTimes.begin(); it != lastModifiedTimes.end();) {
+        if (!fs::exists(it->first)) {
+            it = lastModifiedTimes.erase(it);
+        } else {
+            ++it;
         }
     }
 }

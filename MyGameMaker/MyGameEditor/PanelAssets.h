@@ -1,7 +1,4 @@
-#ifndef __PANEL_ASSETS_H__
-#define __PANEL_ASSETS_H__
 #pragma once
-
 #include "Panel.h"
 #include <string>
 #include <vector>
@@ -35,6 +32,4 @@ private:
     std::vector<AssetEntry> currentAssets;
     bool showDeleteConfirmation = false;
     std::string assetToDelete;
-};
-
-#endif // !__PANEL_ASSETS_H__ 
+}; 

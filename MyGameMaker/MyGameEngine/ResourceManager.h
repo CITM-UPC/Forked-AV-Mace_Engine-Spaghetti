@@ -3,6 +3,9 @@
 #include <unordered_map>
 #include <memory>
 
+// Forward declarations
+class Resource;
+
 class Resource {
 public:
     enum class Type {

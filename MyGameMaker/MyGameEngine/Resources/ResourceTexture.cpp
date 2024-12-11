@@ -4,8 +4,7 @@
 #include <fstream>
 #include <string>
 #include "../Log.h"
-#include "../Renderer.h"
-#include "../Texture.h"
+#include <GL/glew.h>
 
 
 bool ResourceTexture::LoadToMemory() 
