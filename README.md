@@ -25,11 +25,6 @@ https://trello.com/invite/b/671f5539e9e45eef32369bab/ATTIb1663741f6c55a31d3413ee
 - Mouse Wheel - Zoom in and out
 - Right Click - Rotate Camera
 
-# Additional functionalities
-The Assets panel tab inside the Bottom Panel can switch between the Console tab and the Assets tab
-
-In the Assets tab, there is detailed debug information on the process of Resource importing and loading  <br/><br/>
-
 # Additional comments
 ## ResourceManagent
 1. The ResourceManager system is properly implemented as indicated during the class. Any asset files dropped inside the Assets folder will be automatically imported and converted to our Engine Custom files (MYMesh, MyTEX), and stored inside the Library folder. <br/><br/>
@@ -43,3 +38,9 @@ In the Assets tab, there is detailed debug information on the process of Resourc
 1. The Camera is now a component Class added to GameObejcts. <br/><br/>
 2. Has a Basic setting available inside the component setting. <br/><br/>
 3. The Editor Camera now showing in the hierarchy to demonstrate the camera component better.  <br/><br/>
+
+# Additional functionalities
+The Assets panel tab inside the Bottom Panel can switch between the Console tab and the Assets tab
+
+In the Assets tab, there is detailed debug information on the process of Resource importing and loading  <br/><br/>
+
