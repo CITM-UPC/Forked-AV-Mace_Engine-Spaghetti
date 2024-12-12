@@ -305,27 +305,74 @@ void Scene::CleanUp()
 
 void Scene::OnSceneChange() {}
 
+
+bool isAABBInsideFrustum(const BoundingBox& aabb, const std::list<Plane>& planes) {
+	for (const auto& plane : planes) {
+		// Calcula los puntos más cercano y lejano al plano
+		vec3 farthest = vec3(
+			plane.normal.v.x > 0 ? aabb.max.x : aabb.min.x,
+			plane.normal.v.y > 0 ? aabb.max.y : aabb.min.y,
+			plane.normal.v.z > 0 ? aabb.max.z : aabb.min.z
+		);
+
+		vec3 nearest = vec3(
+			plane.normal.v.x > 0 ? aabb.min.x : aabb.max.x,
+			plane.normal.v.y > 0 ? aabb.min.y : aabb.max.y,
+			plane.normal.v.z > 0 ? aabb.min.z : aabb.max.z
+		);
+
+		// Revisar si el AABB está fuera del frustum
+		if (glm::dot(plane.normal.v, farthest - plane.point.p) < 0) {
+			return false; // El AABB está fuera del frustum
+			
+		}
+	}
+	return true; // Está dentro del frustum
+}
+
 void Scene::Draw(GameObject* root)
 {
 
 	for (auto& child : root->children())
 	{
+		std::list<Plane> frustumPlanes = camera()->GetComponent<Camera>()->frustumPlanes();
 		if (child.get()->isActive() && child->HasComponent<Mesh>() && child->GetComponent<Mesh>()->isActive()) {
-			child->GetComponent<Mesh>()->drawModel();
 			BoundingBox oper = child->GetComponent<Transform>()->mat() * child->boundingBox;
 
+			// Convertir la BoundingBox a AABB
+			glm::vec3 corners[8] = {
+				oper.v000(), oper.v001(), oper.v010(), oper.v011(),
+				oper.v100(), oper.v101(), oper.v110(), oper.v111()
+			};
+
+			glm::vec3 aabbMin = corners[0];
+			glm::vec3 aabbMax = corners[0];
+
+			for (int i = 1; i < 8; ++i) {
+				aabbMin = glm::min(aabbMin, corners[i]);
+				aabbMax = glm::max(aabbMax, corners[i]);
+			}
+
+			BoundingBox aabb;
+			aabb.min = aabbMin;
+			aabb.max = aabbMax;
+
 			glLineWidth(2.0);
-			drawWiredQuad(oper.v000(), oper.v001(), oper.v011(), oper.v010());
-			drawWiredQuad(oper.v100(), oper.v101(), oper.v111(), oper.v110());
-			drawWiredQuad(oper.v000(), oper.v001(), oper.v101(), oper.v100());
-			drawWiredQuad(oper.v010(), oper.v011(), oper.v111(), oper.v110());
-			drawWiredQuad(oper.v000(), oper.v010(), oper.v110(), oper.v100());
-			drawWiredQuad(oper.v001(), oper.v011(), oper.v111(), oper.v101());
+			drawWiredQuad(aabb.v000(), aabb.v001(), aabb.v011(), aabb.v010());
+			drawWiredQuad(aabb.v100(), aabb.v101(), aabb.v111(), aabb.v110());
+			drawWiredQuad(aabb.v000(), aabb.v001(), aabb.v101(), aabb.v100());
+			drawWiredQuad(aabb.v010(), aabb.v011(), aabb.v111(), aabb.v110());
+			drawWiredQuad(aabb.v000(), aabb.v010(), aabb.v110(), aabb.v100());
+			drawWiredQuad(aabb.v001(), aabb.v011(), aabb.v111(), aabb.v101());
+
+			if (isAABBInsideFrustum(aabb, frustumPlanes)) {
+				child->GetComponent<Mesh>()->drawModel(); // Dibujar solo si pasa el culling
+			}
 		}
 
 		if (!child->children().empty()) Draw(child.get());
 	}
-	drawFrustum(*camera()->GetComponent<Camera>());
+	/*drawFrustum(*camera()->GetComponent<Camera>());*/
 
 	drawDebugInfoForGraphicObject(*root);
 }
@@ -385,6 +432,7 @@ void Scene::InitCamera()
 
 	std::shared_ptr<GameObject> camera = std::make_shared<GameObject>(_camera);
 	root()->addChild(camera);
+	drawFrustum(*camera->GetComponent<Camera>());
 
 }
 
