@@ -10,6 +10,7 @@
 #include "Camera.h"
 
 #include <vector>
+#include "Raycast.h"
 
 class Scene
 {
@@ -51,8 +52,9 @@ public:
 	void CreateCone();
 	void CreateTorus();
 
-	bool intersectRayWithBoundingBox();
-	void raycastFromMouseToGameObject();
+	Raycast CalculatePickingRay(int mouseX, int mouseY, Camera* camera, int screenWidth, int screenHeight);
+	bool IntersectRayBox(const Raycast& ray, const BoundingBox& box, float& t);
+	std::shared_ptr<GameObject>& CheckIntersectionRecursive(const Raycast& ray, std::shared_ptr<GameObject> object, float& closestT, std::shared_ptr<GameObject>& closestObject);
 
 };
 

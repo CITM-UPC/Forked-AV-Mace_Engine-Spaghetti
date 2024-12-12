@@ -39,25 +39,3 @@ bool Camera::isAABBInFrustrum(const glm::dvec3& min, const glm::dvec3& max) cons
 	}
 	return true;
 }
-
-std::pair<glm::vec3, glm::vec3> GetRayFromMouse(int mouseX, int mouseY,
-	const glm::mat4& projection,
-	const glm::mat4& view,
-	const glm::ivec2& viewportSize) {
-	// Coordenadas del mouse a NDC
-	float ndcX = (2.0f * mouseX) / viewportSize.x - 1.0f;
-	float ndcY = 1.0f - (2.0f * mouseY) / viewportSize.y; // OpenGL invierte el eje Y
-
-	// Rayo en espacio de clip
-	glm::vec4 rayClip(ndcX, ndcY, -1.0f, 1.0f);
-
-	// Transformar a espacio de vista
-	glm::vec4 rayEye = glm::inverse(projection) * rayClip;
-	rayEye = glm::vec4(rayEye.x, rayEye.y, -1.0f, 0.0f); // Convertir a vector (w = 0)
-
-	// Transformar a espacio mundial
-	glm::vec3 rayWorld = glm::normalize(glm::vec3(glm::inverse(view) * rayEye));
-	glm::vec3 rayOrigin = glm::vec3(glm::inverse(view) * glm::vec4(0, 0, 0, 1));
-
-	return { rayOrigin, rayWorld };
-}

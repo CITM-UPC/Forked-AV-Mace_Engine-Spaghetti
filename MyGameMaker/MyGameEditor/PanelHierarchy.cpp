@@ -106,6 +106,7 @@ bool PanelHierarchy::Draw()
 
    if (!showWindow) {
        SwitchState();
+
    }
 
    Engine::Instance().scene->selectedGameObject = selectedGameObject();
@@ -144,7 +145,9 @@ void PanelHierarchy::DrawGameObjectTree(GameObject* gameObject)
     // Handle selection
     if (ImGui::IsItemClicked()) {
         SetSelectedGameObject(gameObject);
+        Engine::Instance().scene->selectedGameObject = gameObject;
     }
+    else SetSelectedGameObject(Engine::Instance().scene->selectedGameObject);
 
     // Begin drag source
     if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None)) {

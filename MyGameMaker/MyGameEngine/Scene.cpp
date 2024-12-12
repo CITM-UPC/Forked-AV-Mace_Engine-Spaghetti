@@ -1,14 +1,11 @@
 ﻿#include "Scene.h"
 #include "types.h"
 #include "Camera.h"
-#include "GameObject.h"
-#include "BoundingBox.h"
 
 #include <glm/glm.hpp>
 #include <memory>
 #include <GL/glut.h>
 #include <iostream>
-#include "Camera.cpp"
 
 #include "Engine.h"
 #include "Log.h"
@@ -17,7 +14,9 @@
 #include "Mesh.h"
 #include "Material.h"
 #include "debugDraws.h"
-
+#include "BoundingBox.h"
+#include "MyWindow.h"
+#include "Raycast.h"
 
 //camera movement variables
 bool rightMouse = false;
@@ -243,51 +242,42 @@ void Scene::Update(double& dT)
 		leftMouse = false;
 	}
 
-	if (Engine::Instance().input->GetKey(SDL_SCANCODE_LALT) == KEY_REPEAT && leftMouse) {
-		if (selectedGameObject != nullptr)
-		{
-			Engine::Instance().input->GetMousePosition(mouseX, mouseY);
-			vec3 targetPos = selectedGameObject->GetComponent<Transform>()->glob_pos();
 
-			// Calcular la distancia y offset inicial entre la c�mara y el objeto
-			vec3 offset = camera()->GetComponent<Transform>()->pos() - targetPos;
-			float orbitDistance = glm::length(offset);
+	if (Engine::Instance().input->GetMouseButtonDown(SDL_BUTTON_LEFT) == KEY_DOWN) {
+		int mouseX, mouseY;
+		Engine::Instance().input->GetMousePosition(mouseX, mouseY);
 
-			// Calcular �ngulos iniciales de la c�mara
-			horizontalAngle = atan2(offset.x, offset.z);
-			verticalAngle = asin(offset.y / orbitDistance);
+		// Screen dimensions
+		int screenWidth = Engine::Instance().window->width();
+		int screenHeight = Engine::Instance().window->height();
 
-			// Sensibilidad del movimiento del rat�n
-			float sensitivity = 0.005f;
+		if (mouseX < Engine::Instance().window->width() || mouseX >(Engine::Instance().window->height() + screenWidth) || mouseY < 20 || mouseY > screenHeight) {
+			return;
+		}
+		Raycast ray = CalculatePickingRay(mouseX, mouseY - Engine::Instance().window->height(), camera()->GetComponent<Camera>(), screenWidth, screenHeight);
 
-			float dx = (float)(mouseX - lastMouseX);
-			float dy = (float)(mouseY - lastMouseY);
+		float closestT = FLT_MAX;
+		std::shared_ptr<GameObject> closestObject = nullptr;
 
-			// Actualizar los angulos en base al movimiento del rat�n
-			horizontalAngle -= dx * sensitivity;
-			verticalAngle += dy * sensitivity;
+		// Start the recursive check from the root object
+		for (auto& child : root()->children()) {
+			closestObject = CheckIntersectionRecursive(ray, child, closestT, closestObject);
+		}
 
-			// Limitar el �ngulo vertical para no pasar por encima o debajo del objeto
-			verticalAngle = glm::clamp(verticalAngle, -glm::half_pi<float>() + 0.1f, glm::half_pi<float>() - 0.1f);
-
-			// Calcular la nueva posici�n de la camara en coordenadas esf�ricas
-			offset.x = orbitDistance * cos(verticalAngle) * sin(horizontalAngle);
-			offset.y = orbitDistance * sin(verticalAngle);
-			offset.z = orbitDistance * cos(verticalAngle) * cos(horizontalAngle);
-
-			camera()->GetComponent<Transform>()->pos() = targetPos + offset;
-
-			// Actualizar la direcci�n de la camara para que mire al objeto
-			camera()->GetComponent<Transform>()->setFwd(glm::normalize(targetPos - camera()->GetComponent<Transform>()->pos()));
-			camera()->GetComponent<Transform>()->setRigth(glm::normalize(glm::cross(vec3(0, 1, 0), camera()->GetComponent<Transform>()->fwd())));
-			camera()->GetComponent<Transform>()->setUp(glm::normalize(glm::cross(camera()->GetComponent<Transform>()->fwd(), camera()->GetComponent<Transform>()->right())));
-
-			Engine::Instance().input->GetMousePosition(lastMouseX, lastMouseY);
+		if (closestObject) {
+			selectedGameObject = closestObject.get();
+			LOG(LogType::LOG_INFO, ("Selected object: " + selectedGameObject->name()).c_str());
 		}
 		else {
-			LOG(LogType::LOG_WARNING, "Select an Object!");
+			selectedGameObject = nullptr;
+			LOG(LogType::LOG_INFO, "No object selected.");
 		}
 	}
+
+
+
+
+
 }
 
 void Scene::PostUpdate()
@@ -540,92 +530,68 @@ void Scene::CreateTorus()
 	else selectedGameObject->addChild(go);
 }
 
-bool intersectRayWithBoundingBox(const glm::vec3& rayOrigin, const glm::vec3& rayDirection, const BoundingBox& bbox) {
-	float tmin, tmax, tymin, tymax, tzmin, tzmax;
+Raycast Scene::CalculatePickingRay(int mouseX, int mouseY, Camera* camera, int screenWidth, int screenHeight) {
+	glm::vec4 viewport(WINDOW_WIDTH * 0.15, 200, screenWidth, screenHeight);
 
-	// Evitar divisiones por 0 con direcciones cercanas a cero.
-	if (rayDirection.x != 0.0f) {
-		tmin = (bbox.min.x - rayOrigin.x) / rayDirection.x;
-		tmax = (bbox.max.x - rayOrigin.x) / rayDirection.x;
-		if (tmin > tmax) std::swap(tmin, tmax);
-	}
-	else {
-		tmin = -std::numeric_limits<float>::infinity();
-		tmax = std::numeric_limits<float>::infinity();
-	}
+	glm::mat4 view = glm::mat4(camera->view());
+	glm::mat4 projection = glm::mat4(camera->projection());
 
-	if (rayDirection.y != 0.0f) {
-		tymin = (bbox.min.y - rayOrigin.y) / rayDirection.y;
-		tymax = (bbox.max.y - rayOrigin.y) / rayDirection.y;
-		if (tymin > tymax) std::swap(tymin, tymax);
-	}
-	else {
-		tymin = -std::numeric_limits<float>::infinity();
-		tymax = std::numeric_limits<float>::infinity();
-	}
+	glm::vec3 nearPoint = glm::unProject(glm::vec3(mouseX, screenHeight - mouseY, 0.0f),
+		view,
+		projection,
+		viewport);
+	glm::vec3 farPoint = glm::unProject(glm::vec3(mouseX, screenHeight - mouseY, 1.0f),
+		view,
+		projection,
+		viewport);
 
-	// Comparar intervalos X e Y
-	if ((tmin > tymax) || (tymin > tmax)) {
-		return false;
-	}
+	glm::vec3 direction = glm::normalize(farPoint - nearPoint);
+	return Raycast{ nearPoint, direction };
+}
 
-	tmin = std::max(tmin, tymin);
-	tmax = std::min(tmax, tymax);
+bool Scene::IntersectRayBox(const Raycast& ray, const BoundingBox& box, float& t) {
+	float tmin = (box.min.x - ray.origin.x) / ray.direction.x;
+	float tmax = (box.max.x - ray.origin.x) / ray.direction.x;
 
-	if (rayDirection.z != 0.0f) {
-		tzmin = (bbox.min.z - rayOrigin.z) / rayDirection.z;
-		tzmax = (bbox.max.z - rayOrigin.z) / rayDirection.z;
-		if (tzmin > tzmax) std::swap(tzmin, tzmax);
-	}
-	else {
-		tzmin = -std::numeric_limits<float>::infinity();
-		tzmax = std::numeric_limits<float>::infinity();
-	}
+	if (tmin > tmax) std::swap(tmin, tmax);
 
-	// Comparar intervalos X, Y y Z
-	if ((tmin > tzmax) || (tzmin > tmax)) {
-		return false;
-	}
+	float tymin = (box.min.y - ray.origin.y) / ray.direction.y;
+	float tymax = (box.max.y - ray.origin.y) / ray.direction.y;
 
-	tmin = std::max(tmin, tzmin);
-	tmax = std::min(tmax, tzmax);
+	if (tymin > tymax) std::swap(tymin, tymax);
 
-	// Si tmin >= 0, el rayo intersecta en el rango válido.
-	return tmin >= 0.0f;
+	if ((tmin > tymax) || (tymin > tmax)) return false;
+
+	if (tymin > tmin) tmin = tymin;
+	if (tymax < tmax) tmax = tymax;
+
+	float tzmin = (box.min.z - ray.origin.z) / ray.direction.z;
+	float tzmax = (box.max.z - ray.origin.z) / ray.direction.z;
+
+	if (tzmin > tzmax) std::swap(tzmin, tzmax);
+
+	if ((tmin > tzmax) || (tzmin > tmax)) return false;
+
+	t = tmin;
+	return true;
 }
 
 
-GameObject* raycastFromMouseToGameObject(int mouseX, int mouseY,
-	const glm::mat4& projection,
-	const glm::mat4& view,
-	const glm::ivec2& viewportSize,
-	const std::vector<GameObject*>& gameObjects) {
-	// Obtener el origen y dirección del rayo desde las coordenadas del mouse
-	auto [rayOrigin, rayDirection] = GetRayFromMouse(mouseX, mouseY, projection, view, viewportSize);
-
-	GameObject* closestObject = nullptr;
-	float closestDistance = std::numeric_limits<float>::max();
-
-	// Iterar sobre los objetos en la escena
-	for (GameObject* go : gameObjects) {
-		if (!go) continue;
-
-		// Obtener la caja delimitadora del objeto
-		BoundingBox bbox = go->boundingBox;
-
-		// Comprobar si el rayo intersecta con la caja
-		if (intersectRayWithBoundingBox(rayOrigin, rayDirection, bbox)) {
-			// Calcular la distancia del objeto al origen del rayo
-			glm::vec3 objectPosition = go->GetComponent<Transform>()->pos(); // Método que debes tener
-			float distance = glm::length(objectPosition - rayOrigin);
-
-			// Guardar el objeto más cercano
-			if (distance < closestDistance) {
-				closestDistance = distance;
-				closestObject = go;
-			}
+std::shared_ptr<GameObject>& Scene::CheckIntersectionRecursive(const Raycast& ray, std::shared_ptr<GameObject> object, float& closestT, std::shared_ptr<GameObject>& closestObject) {
+	// Check the bounding box of the current object
+	BoundingBox bbox = object->boundingBox;
+	float t;
+	if (object->HasComponent<Mesh>()) {
+		if (IntersectRayBox(ray, bbox, t) && t < closestT) {
+			closestT = t;
+			closestObject = object;
 		}
 	}
 
-	return closestObject; // Devuelve el objeto más cercano, o nullptr si no se encontró ninguno
+	// Recursively check the children of the current object
+	for (auto& child : object->children()) {
+		CheckIntersectionRecursive(ray, child, closestT, closestObject);
+	}
+
+	return closestObject;
 }

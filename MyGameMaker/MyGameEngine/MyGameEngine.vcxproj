@@ -149,6 +149,7 @@
     <ClInclude Include="MyWindow.h" />
     <ClInclude Include="PerfTimer.h" />
     <ClInclude Include="PolymorphList.h" />
+    <ClInclude Include="Raycast.h" />
     <ClInclude Include="readOnlyView.h" />
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="ResourceManager.h" />
@@ -177,6 +178,7 @@
     <ClCompile Include="ModelLoader.cpp" />
     <ClCompile Include="MyWindow.cpp" />
     <ClCompile Include="PerfTimer.cpp" />
+    <ClCompile Include="Raycast.cpp" />
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="ResourceManager.cpp" />
     <ClCompile Include="Resources\ResourceMesh.cpp" />
