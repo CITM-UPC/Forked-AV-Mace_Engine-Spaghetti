@@ -101,27 +101,31 @@ void drawIntersectionPoint(const vec3& point) {
 }
 */
 
-// Helper function to compute the frustum corners in world space
-std::array<vec3, 8> computeFrustumCorners(const Camera& camera) {
-	glm::dmat4 invPV = glm::inverse(camera.projection() * camera.view());
+// Helper function to compute the frustum corners in view space
+std::array<vec3, 8> computeFrustumCornersViewSpace(const Camera& camera) {
+	// Inverse projection matrix to transform NDC to view space
+	glm::dmat4 invProjection = glm::inverse(camera.projection());
 
+	// NDC corners of the frustum
 	std::array<vec4, 8> ndcCorners = {
 		vec4(-1, -1, -1, 1), vec4(1, -1, -1, 1), vec4(1, 1, -1, 1), vec4(-1, 1, -1, 1),
 		vec4(-1, -1,  1, 1), vec4(1, -1,  1, 1), vec4(1, 1,  1, 1), vec4(-1, 1,  1, 1),
 	};
 
-	std::array<vec3, 8> worldCorners;
+	std::array<vec3, 8> viewCorners;
 	for (size_t i = 0; i < 8; ++i) {
-		vec4 corner = invPV * ndcCorners[i];
-		worldCorners[i] = vec3(corner) / corner.w;
+		// Transform each NDC corner to view space
+		vec4 corner = invProjection * ndcCorners[i];
+		viewCorners[i] = vec3(corner) / corner.w; // Perspective divide
 	}
 
-	return worldCorners;
+	return viewCorners;
 }
+
 
 // Debug draw function for frustum planes
 void drawFrustum(const Camera& camera) {
-	auto corners = computeFrustumCorners(camera);
+	auto corners = computeFrustumCornersViewSpace(camera);
 
 	glLineWidth(2.0);
 	glColor3ub(255, 0, 255); // Magenta for frustum
@@ -147,24 +151,4 @@ void drawDebugInfoForCamera(const Camera& camera) {
 	drawFrustum(camera);
 
 	glPopMatrix();
-}
-
-// New function to print the frustum on screen
-void printFrustumOnScreen(const Camera& camera) {
-	glMatrixMode(GL_PROJECTION);
-	glPushMatrix();
-	glLoadIdentity();
-	gluOrtho2D(0, 800, 0, 600); // Adjust the orthographic projection as needed
-
-	glMatrixMode(GL_MODELVIEW);
-	glPushMatrix();
-	glLoadIdentity();
-
-	// Draw the frustum
-	drawFrustum(camera);
-
-	glPopMatrix();
-	glMatrixMode(GL_PROJECTION);
-	glPopMatrix();
-	glMatrixMode(GL_MODELVIEW);
 }

@@ -25,6 +25,6 @@ void drawFrustum(const Camera& camera);
 void drawDebugInfoForCamera(const Camera& camera);
 
 void DrawBoundingBox(const BoundingBox& bbox);
-void printFrustumOnScreen(const Camera& camera);
+
 
 #endif // DEBUGDRAWS_H
