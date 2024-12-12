@@ -34,7 +34,7 @@ public:
 	glm::dmat4 view() const;
 
 	
-	bool isAABBInFrustum(const glm::dvec3& min, const glm::dvec3& max) const;
+	bool isAABBInFrustrum(const glm::dvec3& min, const glm::dvec3& max) const;
 
 };
 

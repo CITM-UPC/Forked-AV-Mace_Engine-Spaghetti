@@ -117,6 +117,15 @@ void Scene::Start()
 
 		cubo.min = glm::min(rotatedMin, rotatedMax);
 		cubo.max = glm::max(rotatedMin, rotatedMax);
+		 
+		//if (bakerHouse->GetComponent<Camera>()->isAABBInFrustrum(cubo.min, cubo.max) == false) { 
+		//	// No renderizar
+		//	go->GetComponent<Mesh>()->isActive() = false; 
+		//}
+		//else {
+		//	// Renderizar el mesh
+		//	go->GetComponent<Mesh>()->isActive()= true; 
+		//}
 
 		go->boundingBox = cubo;
 	}
@@ -373,6 +382,10 @@ void Scene::InitCamera()
 	_camera.GetComponent<Transform>()->translate(vec3(0, 3, 8));
 	_camera.GetComponent<Transform>()->rotate(glm::radians(180.0), vec3(0, 1, 0));
 	_camera.GetComponent<Transform>()->rotate(glm::radians(20.0), vec3(1, 0, 0));
+
+	std::shared_ptr<GameObject> camera = std::make_shared<GameObject>(_camera);
+	root()->addChild(camera);
+
 }
 
 void Scene::CreateCube()
