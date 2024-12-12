@@ -16,11 +16,14 @@ PanelConsole::~PanelConsole() {}
 
 bool PanelConsole::Draw()
 {
-	ImGui::SetNextWindowSize(ImVec2(Engine::Instance().window->width(), height));
-	ImGui::SetNextWindowPos(ImVec2(0, Engine::Instance().window->height() - height));
+	if (isActiveTab) {
+		DrawContents();
+	}
+	return true;
+}
 
-	ImGui::Begin("Console", &showWindow, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize);
-
+void PanelConsole::DrawContents()
+{
 	ImVec4 color = ImVec4(1, 1, 1, 1);
 	for (size_t i = 0; i < Engine::Instance().GetLogs().size(); i++)
 	{
@@ -44,13 +47,4 @@ bool PanelConsole::Draw()
 		ImGui::Text(Engine::Instance().GetLogs()[i].message.c_str());
 		ImGui::PopStyleColor();
 	}
-	
-	ImGui::End();
-
-
-	if (!showWindow) {
-		SwitchState();
-	}
-
-	return true;
 }
